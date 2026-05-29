@@ -1,4 +1,5 @@
-local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/refs/heads/main/PatriotlUi.luau"))()                                                        
+local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi.luau"))()  
+                                                      
 -- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/refs/heads/main/PatriotUi-luarmor.luau"))()
 -- Use this version only when you need to use luarmor
 -- 仅在需要使用luarmor时使用此版本。
@@ -56,7 +57,7 @@ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndr
 
 
 Patriot.Callbacks.OnVerify = function(key)
-    return key == ""----Set key｜设置密钥
+    return key == "1"----Set key｜设置密钥
 end
 -- ↑↑↑↑↑Simple Validation｜简单验证
 -- OnVerify｜Called when a key is submitted for validation. Return true for valid keys, or a detailed response object.
