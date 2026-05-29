@@ -3,10 +3,15 @@ Modified by ArqelUi
 修改于 ArqelUi
 <div align="center">
 
+[![Docs](https://img.shields.io/badge/Documentation-Arqelui.orqan.xyz-0A0A0A?style=for-the-badge&logo=gitbook&logoColor=white)](https://Arqelui.orqan.xyz)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://Orqan.lol/discord)
 
-A modern key system UI for Roblox executors. Supports custom validation, Junkie SDK integration, persistent key storage, and keyless mode.
-一个适用于Roblox执行器的现代密钥系统用户界面。支持自定义验证、Junkie SDK集成、持久密钥存储和无密钥模式。
+A modern key system UI for Roblox executors. Supports custom validation, Junkie SDK integration, Luarmor API integration, persistent key storage, and keyless mode.
+
+一个适用于Roblox执行器的现代密钥系统用户界面。支持自定义验证、Junkie SDK集成、Luarmor API集成、持久密钥存储和无密钥模式。
 <div align="center">
+
+[![Arqel Key System Ui](https://uibin.orqan.xyz/api/card?id=a70efc5c-f87a-4a19-b63e-41ad86e6b132&theme=red)](https://uibin.orqan.xyz/library/a70efc5c-f87a-4a19-b63e-41ad86e6b132)
 
 
 <a href="https://www.star-history.com/?repos=SyndromeXph%2Fexpert-octo-doodle&type=date&legend=bottom-right">
