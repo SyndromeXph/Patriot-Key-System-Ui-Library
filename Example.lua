@@ -3,7 +3,7 @@ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndr
 
 -- getgenv().Patriot = getgenv().Patriot or {}
 -- getgenv().Patriot.LuarmorScriptId = "YOUR_SCRIPT_ID_HERE"                                                                              
--- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/refs/heads/main/PatriotUi-luarmor.luau"))()
+-- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi-luarmor.luau"))()
 -- Use this version only when you need to use luarmor
 -- 仅在需要使用luarmor时使用此版本。
 
