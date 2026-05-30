@@ -1,11 +1,13 @@
- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi.luau"))()  
-                                                      
+local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi.luau"))()  
+
+
+-- getgenv().Patriot = getgenv().Patriot or {}
+-- getgenv().Patriot.LuarmorScriptId = "YOUR_SCRIPT_ID_HERE"                                                                              
 -- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/refs/heads/main/PatriotUi-luarmor.luau"))()
 -- Use this version only when you need to use luarmor
 -- 仅在需要使用luarmor时使用此版本。
 
 -- local LuarmorAPI = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
--- Patriot.LuarmorScriptId = "YOUR_SCRIPT_ID_HERE"
 -- Patriot.Callbacks.OnVerify = function(key)
 --    local status = LuarmorAPI.check_key(key)
 --    if status.code == "KEY_VALID" then
