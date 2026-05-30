@@ -23,6 +23,7 @@ repeat task.wait() until game:IsLoaded()
 
 
 local LuarmorAPI = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
+Patriot.LuarmorScriptId = Patriot.LuarmorScriptId or ""
 LuarmorAPI.script_id = Patriot.LuarmorScriptId
 
 
