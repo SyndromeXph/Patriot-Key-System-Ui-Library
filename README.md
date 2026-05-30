@@ -11,8 +11,7 @@ A modern key system UI for Roblox executors. Supports custom validation, Junkie 
 一个适用于Roblox执行器的现代密钥系统用户界面。支持自定义验证、Junkie SDK集成、Luarmor API集成、持久密钥存储和无密钥模式。
 <div align="center">
 
-[![Arqel Key System Ui](https://uibin.orqan.xyz/api/card?id=a70efc5c-f87a-4a19-b63e-41ad86e6b132&theme=red)](https://uibin.orqan.xyz/library/a70efc5c-f87a-4a19-b63e-41ad86e6b132)
-
+[![Patriot Ui](https://uibin.orqan.xyz/api/card?id=e93deb13-ed1b-4179-ba4d-b84367d1a8d6&theme=orange)](https://uibin.orqan.xyz/library/e93deb13-ed1b-4179-ba4d-b84367d1a8d6)
 
 <a href="https://www.star-history.com/?repos=SyndromeXph%2Fexpert-octo-doodle&type=date&legend=bottom-right">
  <picture>
