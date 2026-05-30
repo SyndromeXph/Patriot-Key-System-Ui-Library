@@ -1,4 +1,4 @@
-local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi.luau"))()  
+ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi.luau"))()  
                                                       
 -- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/refs/heads/main/PatriotUi-luarmor.luau"))()
 -- Use this version only when you need to use luarmor
@@ -9,19 +9,19 @@ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndr
 -- Patriot.Callbacks.OnVerify = function(key)
 --    local status = LuarmorAPI.check_key(key)
 --    if status.code == "KEY_VALID" then
---        return { valid = true }
+--       return { valid = true }
 --   else
---       local errMsg = status.message
+--       local errorMsg = status.message
 --        if status.code == "KEY_HWID_LOCKED" then
---           errMsg = "Key is locked to a different HWID. Please reset it."
+--           errorMsg = "Key is locked to a different HWID. Please reset it."
 --      elseif status.code == "KEY_INCORRECT" then
---         errMsg = "Key is invalid or does not exist."
+--         errorMsg = "Key is invalid or does not exist."
 --        elseif status.code == "KEY_EXPIRED" then
---          errMsg = "Key has expired."
+--          errorMsg = "Key has expired."
 --      end
---        return { valid = false, message = errMsg }
+--        return { valid = false, message = errorMsg }
 -- end
---end
+-- end
 -- luarmor system invoke｜卢阿莫系统调用
 
 
@@ -34,6 +34,7 @@ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndr
 --    Provider = "YOUR_PROVIDER_NAME"
 --})
 -- Keys are automatically validated through Junkie
+-- 密钥通过Junkie自动验证
 
 
 
@@ -53,7 +54,7 @@ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndr
 --    return false
 -- end
 -- HTTP API Validation | Validate keys through your own API endpoint
-
+-- HTTP API验证 | 通过您自己的API端点验证密钥。
 
 
 Patriot.Callbacks.OnVerify = function(key)
@@ -104,9 +105,12 @@ Patriot.Storage = {
 -- Options｜选项
 Patriot.Options = {
     Keyless = false,-- Keyless Mode｜Skip the key system entirely. Perfect for free scripts.
+-- 无键模式｜完全跳过按键系统。非常适合自由脚本。    
+
 -- Keyless = true      
 -- KeylessUI = false,
 -- Keyless Mode Without UI｜Completely bypass the UI and run your script immediately.
+-- 无用户界面无键模式｜完全绕过用户界面，立即运行脚本。
     Blur = true,
     Draggable = true
 }
@@ -223,7 +227,7 @@ end
 --        }))
 --    end)
 -- end
---Webhook Logging｜Log successful key validations to a Discord webhook
+-- Webhook Logging｜Log successful key validations to a Discord webhook
 -- Webhook日志记录 将成功的密钥验证记录到Discord Webhook中。
 
 
@@ -232,6 +236,7 @@ end
 -- Changelog button only appears when entries exist
 -- 只有存在条目时，更新日志按钮才会显示。
 Patriot.Changelog = {
+    {Version = "v0.0.4", Date = "May 30, 2026", Changes = {"Fix luarmor verson script id"}},
     {Version = "v0.0.3", Date = "May 27, 2026", Changes = {"Add Key System Ui"}},
     {Version = "v0.0.2", Date = "May 27, 2026", Changes = {"Support luarmor", "Fixed bug"}},
     {Version = "v0.0.1", Date = "May 27, 2026", Changes = {"Add Something"}},
