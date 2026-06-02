@@ -12,10 +12,11 @@ A modern key system UI for Roblox executors. Supports custom validation, Junkie 
 <div align="center">
 
 [![Patriot Ui](https://uibin.orqan.xyz/api/card?id=e93deb13-ed1b-4179-ba4d-b84367d1a8d6&theme=orange)](https://uibin.orqan.xyz/library/e93deb13-ed1b-4179-ba4d-b84367d1a8d6)
-<a href="https://www.star-history.com/?repos=Patriot-Key-System-Ui-Library%2FPatriot-Key-System-Ui-Library&type=date&legend=bottom-right">
+
+<a href="https://www.star-history.com/?repos=SyndromeXph%2FPatriot-Key-System-Ui-Library&type=date&legend=bottom-right">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Patriot-Key-System-Ui-Library/Patriot-Key-System-Ui-Library&type=date&theme=dark&legend=bottom-right" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Patriot-Key-System-Ui-Library/Patriot-Key-System-Ui-Library&type=date&legend=bottom-right" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Patriot-Key-System-Ui-Library/Patriot-Key-System-Ui-Library&type=date&legend=bottom-right" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=SyndromeXph/Patriot-Key-System-Ui-Library&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=SyndromeXph/Patriot-Key-System-Ui-Library&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=SyndromeXph/Patriot-Key-System-Ui-Library&type=date&legend=bottom-right" />
  </picture>
 </a>
