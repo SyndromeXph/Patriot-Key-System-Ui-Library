@@ -3,7 +3,7 @@ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndr
 
 -- getgenv().Patriot = getgenv().Patriot or {}
 -- getgenv().Patriot.LuarmorScriptId = "YOUR_SCRIPT_ID_HERE"                                                                              
--- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi-luarmor.luau"))()
+-- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/refs/heads/main/PatriotUi-luarmor.luau"))()
 -- Use this version only when you need to use luarmor
 -- 仅在需要使用luarmor时使用此版本。
 
@@ -27,6 +27,18 @@ local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Syndr
 -- luarmor system invoke｜卢阿莫系统调用
 
 
+
+-- Panda Auth ｜熊猫
+-- Patriot:LaunchWilkins({
+--    serviceId = "your-service-id",
+--    debug = false,
+--    kickOnDetect = false,
+--    openDashboard = true,
+--    validationTimeout = 600,
+--    onTamper = function(flags) warn("Tamper detected:", table.concat(flags, ",")) end,
+--    onSessionEnd = function(reason, msg) warn("Session ended:", reason, msg) end,
+-- })
+-- Panda Auth Key System SDK integration｜熊猫密钥系统sdk集成
 
 -- LaunchJunkie(config)｜Junkie SDK integration with automatic validation
 -- LaunchJunkie(config) Junkie SDK集成，具备自动验证功能。
@@ -238,7 +250,8 @@ end
 -- Changelog button only appears when entries exist
 -- 只有存在条目时，更新日志按钮才会显示。
 Patriot.Changelog = {
-    {Version = "v0.0.4", Date = "May 30, 2026", Changes = {"Fix luarmor verson script id"}},
+    {Version = "v0.0.4", Date = "May 30, 2026", Changes = {"Add Panda Auth SDK integration","Support Panda Auth Key System"}},
+    {Version = "v0.0.4", Date = "May 30, 2026", Changes = {"Fixed luarmor verson script id"}},
     {Version = "v0.0.3", Date = "May 27, 2026", Changes = {"Add Key System Ui"}},
     {Version = "v0.0.2", Date = "May 27, 2026", Changes = {"Support luarmor", "Fixed bug"}},
     {Version = "v0.0.1", Date = "May 27, 2026", Changes = {"Add Something"}},

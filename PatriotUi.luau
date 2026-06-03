@@ -8,8 +8,7 @@
     \|__|\|__| \|__|\|__| \|___| \__\\|_______| \|_______| \|_______| \|__|
                                 \|__|                                      
                                                                            
-
-     Github - https://github.com/SyndromeXph/expert-octo-doodle/tree/main
+     Github - https://github.com/SyndromeXph/expert-octo-doodle
      Author: Cobru (Cobruhehe, .cobru)
      Modifier: Yuxingchen
      License: MIT
@@ -110,10 +109,12 @@ Patriot.Shop = {
 -- internal
 local Internal = {
     Junkie = nil,
+    Wilkins = nil,
     BlurEffect = nil,
     NotificationList = {},
     ValidateFunction = nil,
     IsJunkieMode = false,
+    IsWilkinsMode = false,
     IconsLoaded = false
 }
 
@@ -1800,7 +1801,7 @@ local function BuildKeylessUI()
             TweenService:Create(main, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
             TweenService:Create(mainStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
             task.wait(0.4) gui:Destroy()
-            if not Internal.IsJunkieMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+            if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
         end)
     end)
 
@@ -2358,7 +2359,7 @@ local function BuildKeyUI()
                 TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
                 TweenService:Create(mainFrame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
                 task.wait(0.4) screenGui:Destroy()
-                if not Internal.IsJunkieMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+                if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
             end)
         else
             setStatus("error", errorMsg) Patriot:Notify("Invalid", errorMsg, 4, "error")
@@ -2388,6 +2389,7 @@ end
 
 function Patriot:Launch()
     Internal.IsJunkieMode = false
+    Internal.IsWilkinsMode = false
     Internal.ValidateFunction = Patriot.Callbacks.OnVerify
     local existingKey = getgenv().SCRIPT_KEY
     if existingKey and existingKey ~= "" then
@@ -2427,6 +2429,7 @@ end
 function Patriot:LaunchJunkie(config)
     assert(config and config.Service and config.Identifier and config.Provider, "Config required: Service, Identifier, Provider")
     Internal.IsJunkieMode = true
+    Internal.IsWilkinsMode = false
     local existingKey = getgenv().SCRIPT_KEY
     if existingKey and existingKey ~= "" then
         Patriot:Notify("Executed", "Script loaded successfully!", 2, "success")
@@ -2473,8 +2476,174 @@ function Patriot:LaunchJunkie(config)
     end)
 end
 
-function Patriot:GetSavedKey() return loadKey() end
-function Patriot:ClearSavedKey() return clearKey() end
+function Patriot:LaunchWilkins(config)
+    assert(config and config.serviceId, "Config required: serviceId")
+    Internal.IsJunkieMode = false
+    Internal.IsWilkinsMode = true
+    local existingKey = getgenv().SCRIPT_KEY
+    if existingKey and existingKey ~= "" then
+        Patriot:Notify("Executed", "Script loaded successfully!", 2, "success")
+        if Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end return
+    end
+    getgenv().PatriotClosed = false
+    EnsureIconsReady(function()
+       
+        local wsCtor = (WebSocket and WebSocket.connect)
+            or (syn and syn.websocket and syn.websocket.connect)
+            or (websocket and websocket.connect)
+        
+        if not wsCtor then
+            Patriot:Notify("Error", "Executor does not support WebSocket", 5, "error")
+            return
+        end
+
+ 
+        local libCode
+        do
+            local ws = wsCtor("wss://secure.pandauth.com/ws?type=wilkins-lib")
+            ws.OnMessage:Connect(function(msg)
+                if msg and #msg > 0 and not libCode then libCode = msg end
+            end)
+            local deadline = tick() + 15
+            repeat task.wait(0.05) until libCode or tick() > deadline
+            pcall(function() ws:Close() end)
+        end
+
+        if not libCode then
+            Patriot:Notify("Error", "Failed to fetch Wilkins library (timeout)", 5, "error")
+            return
+        end
+
+      
+        local Wilkins = loadstring(libCode)()
+        if not Wilkins or type(Wilkins.configure) ~= "function" then
+            Patriot:Notify("Error", "Wilkins library failed to initialize", 5, "error")
+            return
+        end
+
+     
+        local wilkinsConfig = {
+            serviceId = config.serviceId,
+            debug = config.debug or false,
+            kickOnDetect = config.kickOnDetect or false,
+            openDashboard = config.openDashboard ~= nil and config.openDashboard or true,
+            validationTimeout = config.validationTimeout or 600,
+            onTamper = config.onTamper or function(flags)
+                warn("[Wilkins] Server flagged tamper:", table.concat(flags or {}, ","))
+            end,
+            onSessionEnd = config.onSessionEnd or function(reason, msg)
+                warn("[Wilkins] Session ended:", reason, msg or "")
+            end,
+        }
+        Wilkins.configure(wilkinsConfig)
+        Internal.Wilkins = Wilkins
+
+        
+        Internal.ValidateFunction = function(key)
+            local result = Wilkins.validate(key)
+            if result and result.success then
+                return {valid = true}
+            else
+                return {valid = false, error = result and result.error or "Unknown error"}
+            end
+        end
+
+        
+        if Patriot.Links.GetKey == "" then
+            pcall(function()
+                local info = Wilkins.copyGetKeyUrl()
+                if info and info.url then
+                    Patriot.Links.GetKey = info.url
+                end
+            end)
+        end
+
+    
+        if Patriot.Options.Keyless == nil then
+            local keylessResult = Wilkins.validate("KEYLESS")
+            if keylessResult and keylessResult.success then
+                if Patriot.Options.KeylessUI == false then
+                    handleKeylessSkip()
+              
+                    task.spawn(function()
+                        while Wilkins.isConnected() do task.wait(5) end
+                    end)
+                    return
+                end
+                BuildKeylessUI()
+                while not getgenv().SCRIPT_KEY do task.wait(0.1) end
+              
+                task.spawn(function()
+                    while Wilkins.isConnected() do task.wait(5) end
+                end)
+                return
+            end
+        elseif Patriot.Options.Keyless == true then
+            if Patriot.Options.KeylessUI == false then
+                handleKeylessSkip()
+                task.spawn(function()
+                    while Wilkins.isConnected() do task.wait(5) end
+                end)
+                return
+            end
+            BuildKeylessUI()
+            while not getgenv().SCRIPT_KEY do task.wait(0.1) end
+            task.spawn(function()
+                while Wilkins.isConnected() do task.wait(5) end
+            end)
+            return
+        end
+
+       
+        if Patriot.Storage.AutoLoad then
+            local savedKey = Wilkins.loadSavedKey() or loadKey()
+            if savedKey and savedKey ~= "" then
+                Patriot:Notify("Checking", "Validating saved key...", 2, "shield")
+                task.wait(0.5)
+                local result = Wilkins.validate(savedKey)
+                if result and result.success then
+                    getgenv().SCRIPT_KEY = savedKey
+                    Patriot:Notify("Welcome Back", "Key validated!", 2, "success")
+                    task.spawn(function()
+                        while Wilkins.isConnected() do task.wait(5) end
+                    end)
+                    if Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+                    return
+                else
+                    Wilkins.clearSavedKey()
+                    clearKey()
+                    Patriot:Notify("Expired", "Saved key is no longer valid", 3, "warning")
+                    task.wait(1)
+                end
+            end
+        end
+
+   
+        BuildKeyUI()
+        while not getgenv().SCRIPT_KEY do task.wait(0.1) end
+        
+       
+        task.spawn(function()
+            while Internal.Wilkins and Internal.Wilkins.isConnected() do
+                task.wait(5)
+            end
+        end)
+    end)
+end
+
+function Patriot:GetSavedKey()
+    if Internal.IsWilkinsMode and Internal.Wilkins then
+        return Internal.Wilkins.loadSavedKey() or loadKey()
+    end
+    return loadKey()
+end
+
+function Patriot:ClearSavedKey()
+    if Internal.IsWilkinsMode and Internal.Wilkins then
+        Internal.Wilkins.clearSavedKey()
+    end
+    return clearKey()
+end
 
 getgenv().Patriot = Patriot
 return Patriot
