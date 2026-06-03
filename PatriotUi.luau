@@ -12,7 +12,7 @@
      Author: Cobru (Cobruhehe, .cobru)
      Modifier: Yuxingchen
      License: MIT
-                                                                           
+     Enhanced UI with flowing borders, gradients, and smooth animations
 ]]
 
 repeat task.wait() until game:IsLoaded()
@@ -20,6 +20,7 @@ repeat task.wait() until game:IsLoaded()
 local cloneref = cloneref or function(obj) return obj end
 local gethui = gethui or function() return cloneref(game:GetService("CoreGui")) end
 
+-- services
 local TweenService = cloneref(game:GetService("TweenService"))
 local UserInputService = cloneref(game:GetService("UserInputService"))
 local HttpService = cloneref(game:GetService("HttpService"))
@@ -37,6 +38,7 @@ getgenv().PatriotClosed = false
 
 local Patriot = {}
 
+-- appearance
 Patriot.Appearance = {
     Title = "Patriot",
     Subtitle = "Enter your key to continue",
@@ -44,17 +46,20 @@ Patriot.Appearance = {
     IconSize = UDim2.new(0, 30, 0, 30)
 }
 
+-- links
 Patriot.Links = {
     GetKey = "",
     Discord = ""
 }
 
+-- storage
 Patriot.Storage = {
     FileName = "Patriot_Key",
     Remember = true,
     AutoLoad = true
 }
 
+-- options
 Patriot.Options = {
     Keyless = nil,
     KeylessUI = false,
@@ -62,27 +67,29 @@ Patriot.Options = {
     Draggable = true
 }
 
+-- theme (enhanced with gradient-friendly colors)
 Patriot.Theme = {
     Accent = Color3.fromRGB(139, 0, 0),
     AccentHover = Color3.fromRGB(170, 20, 20),
-    Background = Color3.fromRGB(12, 12, 14),
-    Header = Color3.fromRGB(18, 18, 22),
-    Input = Color3.fromRGB(22, 22, 28),
+    AccentLight = Color3.fromRGB(200, 60, 60),
+    Background = Color3.fromRGB(8, 8, 12),
+    BackgroundGlass = Color3.fromRGB(12, 12, 18),
+    Header = Color3.fromRGB(16, 16, 22),
+    Input = Color3.fromRGB(20, 20, 28),
     Text = Color3.fromRGB(255, 255, 255),
-    TextDim = Color3.fromRGB(140, 140, 155),
+    TextDim = Color3.fromRGB(140, 140, 160),
     Success = Color3.fromRGB(50, 205, 110),
     Error = Color3.fromRGB(245, 70, 90),
     Warning = Color3.fromRGB(255, 180, 50),
     StatusIdle = Color3.fromRGB(180, 80, 80),
     Discord = Color3.fromRGB(88, 101, 242),
     DiscordHover = Color3.fromRGB(114, 137, 218),
-    Divider = Color3.fromRGB(35, 35, 45),
-    Pending = Color3.fromRGB(60, 60, 70),
-    GlowAccent = Color3.fromRGB(139, 0, 0),
-    CardBackground = Color3.fromRGB(16, 16, 20),
-    SecondaryBackground = Color3.fromRGB(20, 20, 26)
+    Divider = Color3.fromRGB(45, 45, 70),
+    Pending = Color3.fromRGB(60, 60, 60),
+    Glow = Color3.fromRGB(200, 50, 50)
 }
 
+-- callbacks
 Patriot.Callbacks = {
     OnVerify = nil,
     OnSuccess = nil,
@@ -92,15 +99,17 @@ Patriot.Callbacks = {
 
 Patriot.Changelog = {}
 
+-- shop
 Patriot.Shop = {
     Enabled = false,
     Icon = "",
     Title = "Get Premium Access",
-    Subtitle = "Instant delivery 24/7 support",
+    Subtitle = "Instant delivery • 24/7 support",
     ButtonText = "Buy",
     Link = ""
 }
 
+-- internal
 local Internal = {
     Junkie = nil,
     Wilkins = nil,
@@ -110,7 +119,7 @@ local Internal = {
     IsJunkieMode = false,
     IsWilkinsMode = false,
     IconsLoaded = false,
-    ParticleEffects = {}
+    FlowConnections = {}
 }
 
 local IconBaseURL = "https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/main/Icons/"
@@ -128,9 +137,7 @@ local IconFiles = {
     logo = "Patriot.png",
     user = "U.png",
     clock = "Clock.png",
-    cart = "Cart.png",
-    star = "Star.png",
-    sparkle = "Sparkle.png"
+    cart = "Cart.png"
 }
 
 local FallbackIcons = {
@@ -147,9 +154,7 @@ local FallbackIcons = {
     logo = "rbxassetid://95721401302279",
     user = "rbxassetid://77400125196692",
     clock = "rbxassetid://87505349362628",
-    cart = "rbxassetid://114754518183872",
-    star = "rbxassetid://95721401302279",
-    sparkle = "rbxassetid://95721401302279"
+    cart = "rbxassetid://114754518183872"
 }
 
 local CachedIcons = {}
@@ -314,7 +319,7 @@ local function generateHiddenDots(availableWidth, charWidth)
     charWidth = charWidth or 5
     local count = math.floor(availableWidth / charWidth)
     count = math.max(count, 8)
-    return string.rep("â€¢", count)
+    return string.rep("•", count)
 end
 
 local function formatTime12()
@@ -332,138 +337,323 @@ local function formatDate()
     return os.date("%b %d, %Y")
 end
 
-local function createParticle(parent, config)
-    local particle = Instance.new("Frame")
-    particle.Size = UDim2.new(0, config.Size or 4, 0, config.Size or 4)
-    particle.Position = config.Position or UDim2.new(math.random(), 0, math.random(), 0)
-    particle.BackgroundColor3 = config.Color or Patriot.Theme.Accent
-    particle.BorderSizePixel = 0
-    particle.BackgroundTransparency = 0.3
-    particle.ZIndex = config.ZIndex or 1
-    particle.Parent = parent
-    
-    local corner = Instance.new("UICorner", particle)
-    corner.CornerRadius = UDim.new(1, 0)
-    
-    local targetTransparency = config.TargetTransparency or 1
-    local targetPosition = config.TargetPosition or UDim2.new(
-        particle.Position.X.Scale + (math.random() - 0.5) * 0.4,
-        0,
-        particle.Position.Y.Scale + (math.random() - 0.5) * 0.4,
-        0
-    )
-    local duration = config.Duration or 3
-    local delayTime = config.Delay or 0
-    
-    task.delay(delayTime, function()
-        if particle and particle.Parent then
-            local tween = TweenService:Create(particle, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
-                Position = targetPosition,
-                BackgroundTransparency = targetTransparency,
-                Size = UDim2.new(0, 0, 0, 0)
-            })
-            tween:Play()
-            tween.Completed:Connect(function()
-                if particle and particle.Parent then
-                    particle:Destroy()
-                end
-            end)
-        end
-    end)
-    
-    return particle
-end
+-- ==================== ENHANCED UI FUNCTIONS ====================
 
-local function spawnAmbientParticles(parent, count, areaSize)
-    for i = 1, count do
-        createParticle(parent, {
-            Size = math.random(2, 6),
-            Position = UDim2.new(math.random(), 0, math.random(), 0),
-            Color = Patriot.Theme.Accent,
-            TargetPosition = UDim2.new(math.random(), 0, math.random() - 0.5, 0),
-            Duration = math.random(4, 8),
-            Delay = math.random() * 4,
-            ZIndex = 0
-        })
-    end
-end
-
-local function createScanLine(parent, width, height)
-    local scanLine = Instance.new("Frame")
-    scanLine.Size = UDim2.new(1, 0, 0, 2)
-    scanLine.Position = UDim2.new(0, 0, 0, -2)
-    scanLine.BackgroundColor3 = Patriot.Theme.Accent
-    scanLine.BackgroundTransparency = 0.5
-    scanLine.BorderSizePixel = 0
-    scanLine.ZIndex = 5
-    scanLine.Parent = parent
+-- Create a flowing border effect around a frame
+local function createFlowingBorder(targetFrame, cornerRadius, thickness, glowIntensity)
+    cornerRadius = cornerRadius or 4
+    thickness = thickness or 2
+    glowIntensity = glowIntensity or 0.5
     
-    local gradient = Instance.new("UIGradient", scanLine)
-    gradient.Transparency = NumberSequence.new({
+    local borderContainer = Instance.new("Frame")
+    borderContainer.Name = "FlowingBorder"
+    borderContainer.Size = UDim2.new(1, thickness * 2, 1, thickness * 2)
+    borderContainer.Position = UDim2.new(0, -thickness, 0, -thickness)
+    borderContainer.BackgroundTransparency = 1
+    borderContainer.ZIndex = targetFrame.ZIndex - 1
+    borderContainer.Parent = targetFrame
+    
+    local borderGradient = Instance.new("Frame")
+    borderGradient.Size = UDim2.new(1, 0, 1, 0)
+    borderGradient.BackgroundTransparency = 0.85
+    borderGradient.BackgroundColor3 = Patriot.Theme.Accent
+    borderGradient.BorderSizePixel = 0
+    borderGradient.ZIndex = borderContainer.ZIndex
+    borderGradient.Parent = borderContainer
+    
+    local uiCorner = Instance.new("UICorner", borderGradient)
+    uiCorner.CornerRadius = UDim.new(0, cornerRadius + thickness)
+    
+    local uiStroke = Instance.new("UIStroke", borderGradient)
+    uiStroke.Color = Patriot.Theme.Accent
+    uiStroke.Thickness = thickness
+    uiStroke.Transparency = 0.3
+    
+    -- Create flowing light effect
+    local flowLight = Instance.new("Frame")
+    flowLight.Size = UDim2.new(0.3, 0, 1, 0)
+    flowLight.Position = UDim2.new(-0.3, 0, 0, 0)
+    flowLight.BackgroundColor3 = Patriot.Theme.AccentLight
+    flowLight.BackgroundTransparency = 0.6
+    flowLight.BorderSizePixel = 0
+    flowLight.ZIndex = borderContainer.ZIndex + 1
+    flowLight.Parent = borderContainer
+    
+    local flowCorner = Instance.new("UICorner", flowLight)
+    flowCorner.CornerRadius = UDim.new(0, cornerRadius + thickness)
+    
+    local flowGradient = Instance.new("UIGradient", flowLight)
+    flowGradient.Transparency = NumberSequence.new({
         NumberSequenceKeypoint.new(0, 1),
-        NumberSequenceKeypoint.new(0.2, 0.3),
-        NumberSequenceKeypoint.new(0.5, 0),
-        NumberSequenceKeypoint.new(0.8, 0.3),
+        NumberSequenceKeypoint.new(0.3, 0.7),
+        NumberSequenceKeypoint.new(0.5, 0.3),
+        NumberSequenceKeypoint.new(0.7, 0.7),
         NumberSequenceKeypoint.new(1, 1)
     })
-    gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Background),
-        ColorSequenceKeypoint.new(0.5, Patriot.Theme.Accent),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.Background)
-    })
     
-    local function animate()
-        while scanLine and scanLine.Parent do
-            scanLine.Position = UDim2.new(0, 0, 0, -2)
-            TweenService:Create(scanLine, TweenInfo.new(3 + math.random() * 2, Enum.EasingStyle.Linear), {
-                Position = UDim2.new(0, 0, 1, 2)
-            }):Play()
-            task.wait(3 + math.random() * 2)
-            scanLine.Position = UDim2.new(0, 0, 0, -2)
+    -- Animate the flowing light
+    local flowConnection
+    local angle = 0
+    flowConnection = RunService.RenderStepped:Connect(function(dt)
+        if not borderContainer.Parent then
+            if flowConnection then flowConnection:Disconnect() end
+            return
         end
-    end
+        angle = (angle + dt * 1.5) % (2 * math.pi)
+        local xPos = -0.3 + (math.sin(angle) + 1) / 2 * 1.6
+        flowLight.Position = UDim2.new(xPos, 0, 0, 0)
+    end)
     
-    task.spawn(animate)
-    return scanLine
+    table.insert(Internal.FlowConnections, flowConnection)
+    
+    -- Add subtle glow shadow
+    local shadow = Instance.new("ImageLabel")
+    shadow.Name = "GlowShadow"
+    shadow.Size = UDim2.new(1, thickness * 4, 1, thickness * 4)
+    shadow.Position = UDim2.new(0, -thickness * 2, 0, -thickness * 2)
+    shadow.BackgroundTransparency = 1
+    shadow.Image = "rbxassetid://13127777272" -- Soft glow texture
+    shadow.ImageTransparency = 0.6 - glowIntensity * 0.3
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(20, 20, 20, 20)
+    shadow.ZIndex = borderContainer.ZIndex - 1
+    shadow.Parent = borderContainer
+    
+    return borderContainer, flowConnection
 end
 
-local function createGlowRing(parent, size, position, color)
-    local ring = Instance.new("Frame")
-    ring.Size = UDim2.new(0, size, 0, size)
-    ring.Position = position
-    ring.AnchorPoint = Vector2.new(0.5, 0.5)
-    ring.BackgroundTransparency = 1
-    ring.BorderSizePixel = 0
-    ring.ZIndex = 0
-    ring.Parent = parent
+-- Apply advanced glass morphism style to a frame
+local function applyGlassStyle(frame, transparency)
+    transparency = transparency or 0.85
+    frame.BackgroundTransparency = transparency
+    local gradient = Instance.new("UIGradient", frame)
+    gradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.1),
+        NumberSequenceKeypoint.new(0.5, 0),
+        NumberSequenceKeypoint.new(1, 0.1)
+    })
+    gradient.Rotation = 45
     
-    local stroke = Instance.new("UIStroke", ring)
-    stroke.Color = color or Patriot.Theme.Accent
-    stroke.Thickness = 1.5
-    stroke.Transparency = 0.7
+    local blurLayer = Instance.new("Frame")
+    blurLayer.Size = UDim2.new(1, 0, 1, 0)
+    blurLayer.BackgroundTransparency = 1
+    blurLayer.BackgroundColor3 = Patriot.Theme.BackgroundGlass
+    blurLayer.ZIndex = frame.ZIndex - 1
+    blurLayer.Parent = frame
+    return gradient
+end
+
+-- Enhanced button with hover effects
+local function createEnhancedButton(text, iconKey, isPrimary, parent, yPos, widthScale)
+    widthScale = widthScale or 0.75
+    local mobile = isMobile()
+    local buttonHeight = mobile and math.clamp(42 * getScale(), 38, 48) or 42
     
-    local corner = Instance.new("UICorner", ring)
-    corner.CornerRadius = UDim.new(1, 0)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(widthScale, 0, 0, buttonHeight)
+    btn.Position = UDim2.new(0.5, 0, 0, yPos)
+    btn.AnchorPoint = Vector2.new(0.5, 0)
+    btn.BackgroundColor3 = isPrimary and Patriot.Theme.Accent or Patriot.Theme.Input
+    btn.BackgroundTransparency = isPrimary and 0.1 or 0.85
+    btn.BorderSizePixel = 0
+    btn.Text = ""
+    btn.AutoButtonColor = false
+    btn.Parent = parent
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
     
-    local function pulse()
-        while ring and ring.Parent do
-            TweenService:Create(ring, TweenInfo.new(2, Enum.EasingStyle.Sine), {
-                Size = UDim2.new(0, size * 1.5, 0, size * 1.5),
-                BackgroundTransparency = 1
-            }):Play()
-            TweenService:Create(stroke, TweenInfo.new(2, Enum.EasingStyle.Sine), {
-                Transparency = 1
-            }):Play()
-            task.wait(2)
-            ring.Size = UDim2.new(0, size, 0, size)
-            ring.BackgroundTransparency = 1
-            stroke.Transparency = 0.7
-        end
+    -- Gradient background for primary buttons
+    if isPrimary then
+        local btnGradient = Instance.new("UIGradient", btn)
+        btnGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Patriot.Theme.Accent),
+            ColorSequenceKeypoint.new(0.5, Patriot.Theme.AccentHover),
+            ColorSequenceKeypoint.new(1, Patriot.Theme.Accent)
+        })
+        btnGradient.Rotation = 90
     end
     
-    task.spawn(pulse)
-    return ring
+    local btnStroke = Instance.new("UIStroke", btn)
+    btnStroke.Color = isPrimary and Patriot.Theme.AccentLight or Patriot.Theme.Accent
+    btnStroke.Thickness = 1
+    btnStroke.Transparency = isPrimary and 0.3 or 0.6
+    
+    local content = Instance.new("Frame")
+    content.Size = UDim2.new(1, 0, 1, 0)
+    content.BackgroundTransparency = 1
+    content.Parent = btn
+    
+    local layout = Instance.new("UIListLayout", content)
+    layout.FillDirection = Enum.FillDirection.Horizontal
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.VerticalAlignment = Enum.VerticalAlignment.Center
+    layout.Padding = UDim.new(0, 8)
+    
+    local iconImg = Instance.new("ImageLabel")
+    iconImg.Size = UDim2.new(0, 18, 0, 18)
+    iconImg.BackgroundTransparency = 1
+    iconImg.Image = getIcon(iconKey)
+    iconImg.ImageColor3 = Patriot.Theme.Text
+    iconImg.ScaleType = Enum.ScaleType.Fit
+    iconImg.LayoutOrder = 1
+    iconImg.Parent = content
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0, 0, 0, 20)
+    label.AutomaticSize = Enum.AutomaticSize.X
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Patriot.Theme.Text
+    label.TextSize = mobile and 14 or 15
+    label.Font = Enum.Font.ArimoBold
+    label.LayoutOrder = 2
+    label.Parent = content
+    
+    -- Hover animations
+    local originalScale = btn.Size
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundTransparency = isPrimary and 0 or 0.7}):Play()
+        TweenService:Create(btnStroke, TweenInfo.new(0.15), {Transparency = 0.2}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = UDim2.new(widthScale, 2, 0, buttonHeight + 2)}):Play()
+        TweenService:Create(iconImg, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.AccentLight}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundTransparency = isPrimary and 0.1 or 0.85}):Play()
+        TweenService:Create(btnStroke, TweenInfo.new(0.15), {Transparency = isPrimary and 0.3 or 0.6}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Size = UDim2.new(widthScale, 0, 0, buttonHeight)}):Play()
+        TweenService:Create(iconImg, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Text}):Play()
+    end)
+    
+    return btn
 end
+
+-- Enhanced input field with glow effect
+local function createEnhancedInput(parent, yPos, widthScale, placeholder)
+    local mobile = isMobile()
+    local elementHeight = mobile and math.clamp(56 * getScale(), 48, 62) or 56
+    widthScale = widthScale or 0.94
+    
+    local inputFrame = Instance.new("Frame")
+    inputFrame.Size = UDim2.new(widthScale, 0, 0, elementHeight)
+    inputFrame.Position = UDim2.new(0.5, 0, 0, yPos)
+    inputFrame.AnchorPoint = Vector2.new(0.5, 0)
+    inputFrame.BackgroundColor3 = Patriot.Theme.Input
+    inputFrame.BackgroundTransparency = 0.9
+    inputFrame.BorderSizePixel = 0
+    inputFrame.ClipsDescendants = true
+    inputFrame.Parent = parent
+    Instance.new("UICorner", inputFrame).CornerRadius = UDim.new(0, 8)
+    
+    local inputStroke = Instance.new("UIStroke", inputFrame)
+    inputStroke.Color = Patriot.Theme.Accent
+    inputStroke.Thickness = 1
+    inputStroke.Transparency = 0.6
+    
+    local glowFrame = Instance.new("Frame")
+    glowFrame.Size = UDim2.new(1, 0, 1, 0)
+    glowFrame.BackgroundTransparency = 1
+    glowFrame.Parent = inputFrame
+    
+    local glowGradient = Instance.new("UIGradient", glowFrame)
+    glowGradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 1),
+        NumberSequenceKeypoint.new(0.5, 0.9),
+        NumberSequenceKeypoint.new(1, 1)
+    })
+    
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(1, -24, 1, 0)
+    textBox.Position = UDim2.new(0, 12, 0.5, 0)
+    textBox.AnchorPoint = Vector2.new(0, 0.5)
+    textBox.BackgroundTransparency = 1
+    textBox.Text = ""
+    textBox.TextColor3 = Patriot.Theme.Text
+    textBox.PlaceholderText = placeholder or "Enter your key..."
+    textBox.PlaceholderColor3 = Patriot.Theme.TextDim
+    textBox.TextSize = mobile and 17 or 18
+    textBox.Font = Enum.Font.ArimoBold
+    textBox.ClearTextOnFocus = false
+    textBox.TextTruncate = Enum.TextTruncate.AtEnd
+    textBox.TextXAlignment = Enum.TextXAlignment.Left
+    textBox.Parent = inputFrame
+    
+    -- Focus glow animation
+    textBox.Focused:Connect(function()
+        TweenService:Create(inputStroke, TweenInfo.new(0.2), {Transparency = 0.2, Thickness = 2}):Play()
+        TweenService:Create(glowGradient, TweenInfo.new(0.2), {Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.6),
+            NumberSequenceKeypoint.new(0.5, 0.4),
+            NumberSequenceKeypoint.new(1, 0.6)
+        })}):Play()
+    end)
+    textBox.FocusLost:Connect(function()
+        TweenService:Create(inputStroke, TweenInfo.new(0.2), {Transparency = 0.6, Thickness = 1}):Play()
+        TweenService:Create(glowGradient, TweenInfo.new(0.2), {Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.5, 0.9),
+            NumberSequenceKeypoint.new(1, 1)
+        })}):Play()
+    end)
+    
+    return textBox, inputFrame
+end
+
+-- Enhanced status frame
+local function createEnhancedStatusFrame(parent, yPos, statusText, iconKey)
+    local mobile = isMobile()
+    local statusHeight = mobile and math.clamp(60 * getScale(), 52, 68) or 60
+    
+    local statusFrame = Instance.new("Frame")
+    statusFrame.Size = UDim2.new(0.94, 0, 0, statusHeight)
+    statusFrame.Position = UDim2.new(0.5, 0, 0, yPos)
+    statusFrame.AnchorPoint = Vector2.new(0.5, 0)
+    statusFrame.BackgroundColor3 = Patriot.Theme.Input
+    statusFrame.BackgroundTransparency = 0.85
+    statusFrame.BorderSizePixel = 0
+    statusFrame.ClipsDescendants = true
+    statusFrame.Parent = parent
+    Instance.new("UICorner", statusFrame).CornerRadius = UDim.new(0, 8)
+    
+    local statusStroke = Instance.new("UIStroke", statusFrame)
+    statusStroke.Color = Patriot.Theme.Accent
+    statusStroke.Thickness = 1
+    statusStroke.Transparency = 0.5
+    
+    local statusIcon = Instance.new("ImageLabel")
+    statusIcon.Size = UDim2.new(0, 24, 0, 24)
+    statusIcon.Position = UDim2.new(0, 16, 0.5, 0)
+    statusIcon.AnchorPoint = Vector2.new(0, 0.5)
+    statusIcon.BackgroundTransparency = 1
+    statusIcon.Image = getIcon(iconKey or "lock")
+    statusIcon.ImageColor3 = Patriot.Theme.StatusIdle
+    statusIcon.ScaleType = Enum.ScaleType.Fit
+    statusIcon.Parent = statusFrame
+    
+    local statusLabel = Instance.new("TextLabel")
+    statusLabel.Size = UDim2.new(1, -60, 1, 0)
+    statusLabel.Position = UDim2.new(0, 52, 0, 0)
+    statusLabel.BackgroundTransparency = 1
+    statusLabel.Text = statusText or Patriot.Appearance.Subtitle
+    statusLabel.TextColor3 = Patriot.Theme.StatusIdle
+    statusLabel.TextSize = mobile and 17 or 18
+    statusLabel.Font = Enum.Font.ArimoBold
+    statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+    statusLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    statusLabel.Parent = statusFrame
+    
+    local pulseConnection
+    local function startPulse()
+        pulseConnection = RunService.RenderStepped:Connect(function(dt)
+            if not statusFrame.Parent then if pulseConnection then pulseConnection:Disconnect() end return end
+            local pulse = (math.sin(tick() * 3) + 1) / 2 * 0.3 + 0.7
+            statusIcon.ImageColor3 = Patriot.Theme.StatusIdle:lerp(Patriot.Theme.Accent, pulse)
+        end)
+        return pulseConnection
+    end
+    
+    return statusFrame, statusIcon, statusLabel, startPulse
+end
+
+-- ==================== END ENHANCED UI FUNCTIONS ====================
 
 local function enableBlur()
     if not Patriot.Options.Blur then return end
@@ -473,7 +663,7 @@ local function enableBlur()
     Internal.BlurEffect.Name = "PatriotKeySystemBlur"
     Internal.BlurEffect.Size = 0
     Internal.BlurEffect.Parent = Lighting
-    TweenService:Create(Internal.BlurEffect, TweenInfo.new(0.6, Enum.EasingStyle.Quart), {Size = 24}):Play()
+    TweenService:Create(Internal.BlurEffect, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Size = 24}):Play()
 end
 
 local function disableBlur()
@@ -495,6 +685,10 @@ end
 local function fullCleanup()
     getgenv().PatriotLoaded = false
     getgenv().PatriotClosed = true
+    for _, conn in ipairs(Internal.FlowConnections) do
+        pcall(function() conn:Disconnect() end)
+    end
+    Internal.FlowConnections = {}
     disableBlur()
     local gui1 = hui:FindFirstChild("PatriotKeySystem")
     local gui2 = hui:FindFirstChild("PatriotKeylessSystem")
@@ -551,6 +745,7 @@ local function runExternalScript()
     end)
 end
 
+-- Enhanced Door Overlay with smoother animations
 local function CreateDoorOverlay(parentFrame, width, height)
     local overlay = Instance.new("Frame")
     overlay.Name = "DoorOverlay"
@@ -569,12 +764,6 @@ local function CreateDoorOverlay(parentFrame, width, height)
     leftDoor.ZIndex = 51
     leftDoor.Parent = overlay
 
-    local leftDoorGradient = Instance.new("UIGradient", leftDoor)
-    leftDoorGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Header),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 35))
-    })
-
     local rightDoor = Instance.new("Frame")
     rightDoor.Name = "RightDoor"
     rightDoor.Size = UDim2.new(0.5, 0, 1, 0)
@@ -584,20 +773,16 @@ local function CreateDoorOverlay(parentFrame, width, height)
     rightDoor.ZIndex = 51
     rightDoor.Parent = overlay
 
-    local rightDoorGradient = Instance.new("UIGradient", rightDoor)
-    rightDoorGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 35)),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.Header)
-    })
-
-    local dividerLine = Instance.new("Frame")
-    dividerLine.Size = UDim2.new(0, 2, 1, 0)
-    dividerLine.Position = UDim2.new(0.5, -1, 0, 0)
-    dividerLine.BackgroundColor3 = Patriot.Theme.Accent
-    dividerLine.BackgroundTransparency = 0.3
-    dividerLine.BorderSizePixel = 0
-    dividerLine.ZIndex = 52
-    dividerLine.Parent = overlay
+    -- Add gradient to doors
+    for _, door in ipairs({leftDoor, rightDoor}) do
+        local gradient = Instance.new("UIGradient", door)
+        gradient.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0),
+            NumberSequenceKeypoint.new(0.5, 0.1),
+            NumberSequenceKeypoint.new(1, 0)
+        })
+        gradient.Rotation = 90
+    end
 
     local logoSize = math.min(width, height) * 0.28
     local logoImage = Instance.new("ImageLabel")
@@ -612,17 +797,13 @@ local function CreateDoorOverlay(parentFrame, width, height)
     logoImage.ZIndex = 54
     logoImage.Parent = overlay
 
-    local glowRing = createGlowRing(overlay, logoSize * 0.8, UDim2.new(0.5, 0, 0.5, 0), Patriot.Theme.Accent)
-
     local halfWidth = math.ceil(width / 2)
 
     local function openDoors(callback)
-        TweenService:Create(glowRing, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(dividerLine, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(logoImage, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {ImageTransparency = 1}):Play()
-        task.wait(0.3)
-        TweenService:Create(leftDoor, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(0, -halfWidth, 0, 0)}):Play()
-        TweenService:Create(rightDoor, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(1, 0, 0, 0)}):Play()
+        TweenService:Create(logoImage, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {ImageTransparency = 1, ImageColor3 = Patriot.Theme.Accent}):Play()
+        task.wait(0.2)
+        TweenService:Create(leftDoor, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {Position = UDim2.new(0, -halfWidth, 0, 0)}):Play()
+        TweenService:Create(rightDoor, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {Position = UDim2.new(1, 0, 0, 0)}):Play()
         task.wait(0.55)
         overlay.Visible = false
         if callback then callback() end
@@ -633,14 +814,10 @@ local function CreateDoorOverlay(parentFrame, width, height)
         leftDoor.Position = UDim2.new(0, -halfWidth, 0, 0)
         rightDoor.Position = UDim2.new(1, 0, 0, 0)
         logoImage.ImageTransparency = 1
-        glowRing.BackgroundTransparency = 1
-        dividerLine.BackgroundTransparency = 1
         TweenService:Create(leftDoor, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
         TweenService:Create(rightDoor, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0, 0)}):Play()
-        TweenService:Create(dividerLine, TweenInfo.new(0.3), {BackgroundTransparency = 0.3}):Play()
-        task.wait(0.48)
+        task.wait(0.5)
         TweenService:Create(logoImage, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {ImageTransparency = 0}):Play()
-        TweenService:Create(glowRing, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
         task.wait(0.35)
         if callback then callback() end
     end
@@ -648,6 +825,7 @@ local function CreateDoorOverlay(parentFrame, width, height)
     return {overlay = overlay, open = openDoors, close = closeDoors}
 end
 
+-- Enhanced Loading Screen (preserved with minor improvements)
 local function ShowLoadingScreen(onComplete)
     local completed = false
     local oldGui = hui:FindFirstChild("PatriotLoadingScreen")
@@ -676,73 +854,86 @@ local function ShowLoadingScreen(onComplete)
     loadingScreen.BorderSizePixel = 0
     loadingScreen.Parent = gui
 
-    spawnAmbientParticles(loadingScreen, 20, nil)
+    local linesContainer = Instance.new("Frame")
+    linesContainer.Size = UDim2.new(1, 0, 1, 0)
+    linesContainer.BackgroundTransparency = 1
+    linesContainer.Parent = loadingScreen
 
-    local centralContainer = Instance.new("Frame")
-    centralContainer.Size = UDim2.new(0, mobile and 200 or 260, 0, mobile and 200 or 260)
-    centralContainer.Position = UDim2.new(0.5, 0, 0.45, 0)
-    centralContainer.AnchorPoint = Vector2.new(0.5, 0.5)
-    centralContainer.BackgroundTransparency = 1
-    centralContainer.Parent = loadingScreen
+    local longLines = {}
+    local linePositions = {0.15, 0.35, 0.65, 0.85}
+    for i = 1, 4 do
+        local line = Instance.new("Frame")
+        line.Size = UDim2.new(0.3, 0, 0, mobile and 2 or 3)
+        line.Position = UDim2.new(1.3, 0, linePositions[i], 0)
+        line.BackgroundColor3 = Patriot.Theme.Text
+        line.BackgroundTransparency = 1
+        line.BorderSizePixel = 0
+        line.Parent = linesContainer
+        Instance.new("UICorner", line).CornerRadius = UDim.new(1, 0)
+        longLines[i] = line
+    end
 
-    local outerRing = Instance.new("Frame")
-    outerRing.Size = UDim2.new(1, 20, 1, 20)
-    outerRing.Position = UDim2.new(0.5, 0, 0.5, 0)
-    outerRing.AnchorPoint = Vector2.new(0.5, 0.5)
-    outerRing.BackgroundTransparency = 1
-    outerRing.BorderSizePixel = 0
-    outerRing.Parent = centralContainer
+    local shipSize = mobile and 18 or 28
+    local shipContainer = Instance.new("Frame")
+    shipContainer.Size = UDim2.new(0, mobile and 100 or 150, 0, mobile and 30 or 50)
+    shipContainer.Position = UDim2.new(0.5, 0, 0.35, 0)
+    shipContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+    shipContainer.BackgroundTransparency = 1
+    shipContainer.Parent = loadingScreen
 
-    local outerStroke = Instance.new("UIStroke", outerRing)
-    outerStroke.Color = Patriot.Theme.Accent
-    outerStroke.Thickness = 1
-    outerStroke.Transparency = 0.8
+    local shipBody = Instance.new("Frame")
+    shipBody.Size = UDim2.new(0, shipSize, 0, shipSize)
+    shipBody.Position = UDim2.new(0.5, 10, 0.5, 0)
+    shipBody.AnchorPoint = Vector2.new(0.5, 0.5)
+    shipBody.BackgroundColor3 = Patriot.Theme.Text
+    shipBody.BackgroundTransparency = 1
+    shipBody.BorderSizePixel = 0
+    shipBody.Parent = shipContainer
+    Instance.new("UICorner", shipBody).CornerRadius = UDim.new(1, 0)
 
-    local outerCorner = Instance.new("UICorner", outerRing)
-    outerCorner.CornerRadius = UDim.new(1, 0)
+    local pointSize = mobile and 10 or 16
+    local shipPoint = Instance.new("Frame")
+    shipPoint.Size = UDim2.new(0, pointSize, 0, pointSize)
+    shipPoint.Position = UDim2.new(1, 2, 0.5, 0)
+    shipPoint.AnchorPoint = Vector2.new(0, 0.5)
+    shipPoint.BackgroundColor3 = Patriot.Theme.Text
+    shipPoint.BackgroundTransparency = 1
+    shipPoint.BorderSizePixel = 0
+    shipPoint.Rotation = 45
+    shipPoint.Parent = shipBody
+    Instance.new("UICorner", shipPoint).CornerRadius = UDim.new(0, 3)
 
-    local innerRing = Instance.new("Frame")
-    innerRing.Size = UDim2.new(1, 10, 1, 10)
-    innerRing.Position = UDim2.new(0.5, 0, 0.5, 0)
-    innerRing.AnchorPoint = Vector2.new(0.5, 0.5)
-    innerRing.BackgroundTransparency = 1
-    innerRing.BorderSizePixel = 0
-    innerRing.Parent = centralContainer
-
-    local innerStroke = Instance.new("UIStroke", innerRing)
-    innerStroke.Color = Patriot.Theme.Accent
-    innerStroke.Thickness = 0.5
-    innerStroke.Transparency = 0.6
-
-    local innerCorner = Instance.new("UICorner", innerRing)
-    innerCorner.CornerRadius = UDim.new(1, 0)
-
-    local shipSize = mobile and 24 or 36
-    local shipFrame = Instance.new("Frame")
-    shipFrame.Size = UDim2.new(0, shipSize, 0, shipSize)
-    shipFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    shipFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    shipFrame.BackgroundTransparency = 1
-    shipFrame.Parent = centralContainer
-
-    local shipIcon = Instance.new("ImageLabel")
-    shipIcon.Size = UDim2.new(1, 0, 1, 0)
-    shipIcon.BackgroundTransparency = 1
-    shipIcon.Image = getLogoIcon()
-    shipIcon.ImageColor3 = Patriot.Theme.Text
-    shipIcon.ImageTransparency = 1
-    shipIcon.ScaleType = Enum.ScaleType.Fit
-    shipIcon.Parent = shipFrame
+    local trails = {}
+    local trailConfigs = {
+        {y = 0.20, width = mobile and 45 or 70},
+        {y = 0.38, width = mobile and 60 or 95},
+        {y = 0.62, width = mobile and 55 or 85},
+        {y = 0.80, width = mobile and 40 or 65}
+    }
+    for i, config in ipairs(trailConfigs) do
+        local trail = Instance.new("Frame")
+        trail.Size = UDim2.new(0, config.width, 0, mobile and 2 or 3)
+        trail.Position = UDim2.new(0.5, -15, config.y, 0)
+        trail.AnchorPoint = Vector2.new(1, 0.5)
+        trail.BackgroundColor3 = Patriot.Theme.Text
+        trail.BackgroundTransparency = 1
+        trail.BorderSizePixel = 0
+        trail.Parent = shipContainer
+        local gradient = Instance.new("UIGradient", trail)
+        gradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.3, 0.5), NumberSequenceKeypoint.new(1, 0)})
+        Instance.new("UICorner", trail).CornerRadius = UDim.new(1, 0)
+        trails[i] = {frame = trail, config = config}
+    end
 
     local phasesContainer = Instance.new("Frame")
-    phasesContainer.Size = UDim2.new(0, mobile and 200 or 260, 0, mobile and 120 or 140)
-    phasesContainer.Position = UDim2.new(0.5, 0, 0.72, 0)
+    phasesContainer.Size = UDim2.new(0, mobile and 200 or 280, 0, mobile and 150 or 180)
+    phasesContainer.Position = UDim2.new(0.5, 0, 0.62, 0)
     phasesContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     phasesContainer.BackgroundTransparency = 1
     phasesContainer.Parent = loadingScreen
 
     local phasesLayout = Instance.new("UIListLayout", phasesContainer)
-    phasesLayout.Padding = UDim.new(0, mobile and 6 or 10)
+    phasesLayout.Padding = UDim.new(0, mobile and 8 or 12)
     phasesLayout.SortOrder = Enum.SortOrder.LayoutOrder
     phasesLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     phasesLayout.VerticalAlignment = Enum.VerticalAlignment.Center
@@ -753,24 +944,24 @@ local function ShowLoadingScreen(onComplete)
 
     for i, name in ipairs(phaseNames) do
         local row = Instance.new("Frame")
-        row.Size = UDim2.new(1, 0, 0, mobile and 20 or 26)
+        row.Size = UDim2.new(1, 0, 0, mobile and 22 or 28)
         row.BackgroundTransparency = 1
         row.LayoutOrder = i
         row.Parent = phasesContainer
 
-        local indicator = Instance.new("Frame")
-        indicator.Size = UDim2.new(0, mobile and 6 or 8, 0, mobile and 6 or 8)
-        indicator.Position = UDim2.new(0, 8, 0.5, 0)
-        indicator.AnchorPoint = Vector2.new(0, 0.5)
-        indicator.BackgroundColor3 = Patriot.Theme.Pending
+        local indicator = Instance.new("TextLabel")
+        indicator.Size = UDim2.new(0, mobile and 22 or 28, 0, mobile and 22 or 28)
         indicator.BackgroundTransparency = 1
-        indicator.BorderSizePixel = 0
+        indicator.Text = "○"
+        indicator.TextColor3 = Patriot.Theme.Pending
+        indicator.TextSize = phaseTextSize
+        indicator.Font = Enum.Font.ArimoBold
+        indicator.TextTransparency = 1
         indicator.Parent = row
-        Instance.new("UICorner", indicator).CornerRadius = UDim.new(1, 0)
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, mobile and -22 or -28, 1, 0)
-        label.Position = UDim2.new(0, mobile and 22 or 28, 0, 0)
+        label.Size = UDim2.new(1, mobile and -28 or -35, 1, 0)
+        label.Position = UDim2.new(0, mobile and 28 or 35, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = name
         label.TextColor3 = Patriot.Theme.Pending
@@ -785,102 +976,112 @@ local function ShowLoadingScreen(onComplete)
 
     local animationRunning = true
     local currentPhase = 0
+    local pulseThread = nil
 
-    local function animateOuterRing()
-        local angle = 0
+    local function animateLongLines()
+        local speeds = {0.8, 1.0, 0.7, 0.9}
         while animationRunning do
-            angle = angle + 0.01
-            outerStroke.Transparency = 0.5 + math.sin(angle) * 0.3
-            task.wait(0.03)
+            for i, line in ipairs(longLines) do
+                task.spawn(function()
+                    line.Position = UDim2.new(1.3, 0, linePositions[i], 0)
+                    line.BackgroundTransparency = 0.5
+                    TweenService:Create(line, TweenInfo.new(speeds[i], Enum.EasingStyle.Linear), {Position = UDim2.new(-0.4, 0, linePositions[i], 0), BackgroundTransparency = 0.9}):Play()
+                end)
+            end
+            task.wait(0.5)
+        end
+    end
+
+    local function animateTrails()
+        while animationRunning do
+            for _, trail in ipairs(trails) do
+                local newWidth = trail.config.width + math.random(-12, 12)
+                TweenService:Create(trail.frame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {Size = UDim2.new(0, newWidth, 0, mobile and 2 or 3), BackgroundTransparency = 0.1 + math.random() * 0.3}):Play()
+            end
+            task.wait(0.1)
+        end
+    end
+
+    local function animateShipShake()
+        while animationRunning do
+            local shakeAmount = mobile and 2 or 3
+            TweenService:Create(shipContainer, TweenInfo.new(0.04, Enum.EasingStyle.Linear), {Position = UDim2.new(0.5, math.random(-shakeAmount, shakeAmount), 0.35, math.random(-1, 1))}):Play()
+            task.wait(0.04)
         end
     end
 
     local function setPhase(num)
+        if pulseThread then task.cancel(pulseThread) pulseThread = nil end
         for i = 1, 5 do
             local p = phases[i]
             if i < num then
-                p.indicator.BackgroundTransparency = 0
-                TweenService:Create(p.indicator, TweenInfo.new(0.3), {BackgroundColor3 = Patriot.Theme.Success}):Play()
-                TweenService:Create(p.label, TweenInfo.new(0.3), {TextColor3 = Patriot.Theme.Success}):Play()
+                p.indicator.Text = "●"
+                TweenService:Create(p.indicator, TweenInfo.new(0.2), {TextColor3 = Patriot.Theme.Success, TextTransparency = 0}):Play()
+                TweenService:Create(p.label, TweenInfo.new(0.2), {TextColor3 = Patriot.Theme.Success}):Play()
             elseif i == num then
-                p.indicator.BackgroundTransparency = 0
-                TweenService:Create(p.indicator, TweenInfo.new(0.3), {BackgroundColor3 = Patriot.Theme.Accent}):Play()
-                TweenService:Create(p.label, TweenInfo.new(0.3), {TextColor3 = Patriot.Theme.Text}):Play()
+                p.indicator.Text = "●"
+                p.indicator.TextTransparency = 0
+                TweenService:Create(p.indicator, TweenInfo.new(0.2), {TextColor3 = Patriot.Theme.Accent}):Play()
+                TweenService:Create(p.label, TweenInfo.new(0.2), {TextColor3 = Patriot.Theme.Text}):Play()
                 currentPhase = num
+                pulseThread = task.spawn(function()
+                    while currentPhase == num do
+                        TweenService:Create(p.indicator, TweenInfo.new(0.4), {TextTransparency = 0.5}):Play()
+                        task.wait(0.4)
+                        if currentPhase ~= num then break end
+                        TweenService:Create(p.indicator, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+                        task.wait(0.4)
+                    end
+                end)
             else
-                p.indicator.BackgroundColor3 = Patriot.Theme.Pending
+                p.indicator.Text = "○"
+                p.indicator.TextColor3 = Patriot.Theme.Pending
                 p.label.TextColor3 = Patriot.Theme.Pending
             end
         end
     end
 
     task.spawn(function()
-        TweenService:Create(blurEffect, TweenInfo.new(0.8), {Size = 24}):Play()
-        TweenService:Create(loadingScreen, TweenInfo.new(0.6), {BackgroundTransparency = 0.2}):Play()
+        TweenService:Create(blurEffect, TweenInfo.new(0.6), {Size = 24}):Play()
+        TweenService:Create(loadingScreen, TweenInfo.new(0.5), {BackgroundTransparency = 0.25}):Play()
         task.wait(0.3)
-        
-        TweenService:Create(shipIcon, TweenInfo.new(0.5, Enum.EasingStyle.Back), {ImageTransparency = 0}):Play()
-        TweenService:Create(outerStroke, TweenInfo.new(0.5), {Transparency = 0.5}):Play()
-        TweenService:Create(innerStroke, TweenInfo.new(0.5), {Transparency = 0.4}):Play()
-        
-        task.spawn(animateOuterRing)
-        
-        task.wait(0.3)
+        TweenService:Create(shipBody, TweenInfo.new(0.4, Enum.EasingStyle.Back), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(shipPoint, TweenInfo.new(0.4, Enum.EasingStyle.Back), {BackgroundTransparency = 0}):Play()
+        task.spawn(animateLongLines)
+        task.spawn(animateTrails)
+        task.spawn(animateShipShake)
+        task.wait(0.2)
         for i = 1, 5 do
-            task.delay((i-1)*0.06, function()
-                TweenService:Create(phases[i].indicator, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-                TweenService:Create(phases[i].label, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
+            task.delay((i-1)*0.08, function()
+                TweenService:Create(phases[i].indicator, TweenInfo.new(0.25), {TextTransparency = 0}):Play()
+                TweenService:Create(phases[i].label, TweenInfo.new(0.25), {TextTransparency = 0}):Play()
             end)
         end
         task.wait(0.5)
-        
         setPhase(1)
         runExternalScript()
-        task.wait(0.35)
-        setPhase(2) ensureFolders() task.wait(0.3)
+        task.wait(0.3)
+        setPhase(2) ensureFolders() task.wait(0.25)
         setPhase(3)
         local iconNames = {"key", "shield", "check", "copy", "discord", "alert", "lock", "loading", "close", "changelog", "user", "clock", "cart"}
         if shouldDownloadLogo() then table.insert(iconNames, "logo") end
-        for _, name in ipairs(iconNames) do downloadIcon(name) task.wait(0.05) end
+        for _, name in ipairs(iconNames) do downloadIcon(name) task.wait(0.06) end
         Internal.IconsLoaded = true
-        setPhase(4) task.wait(0.3)
-        setPhase(5) task.wait(0.6)
-        
+        setPhase(4) task.wait(0.25)
+        setPhase(5) task.wait(0.5)
         animationRunning = false
-        
-        TweenService:Create(shipIcon, TweenInfo.new(0.5, Enum.EasingStyle.Back), {Size = UDim2.new(1.5, 0, 1.5, 0)}):Play()
-        TweenService:Create(shipIcon, TweenInfo.new(0.3), {ImageTransparency = 1}):Play()
-        
-        local explosionRing = Instance.new("Frame")
-        explosionRing.Size = UDim2.new(0, 0, 0, 0)
-        explosionRing.Position = UDim2.new(0.5, 0, 0.5, 0)
-        explosionRing.AnchorPoint = Vector2.new(0.5, 0.5)
-        explosionRing.BackgroundTransparency = 1
-        explosionRing.Parent = centralContainer
-        Instance.new("UICorner", explosionRing).CornerRadius = UDim.new(1, 0)
-        local explosionStroke = Instance.new("UIStroke", explosionRing)
-        explosionStroke.Color = Patriot.Theme.Accent
-        explosionStroke.Thickness = 2
-        explosionStroke.Transparency = 0.3
-        
-        TweenService:Create(explosionRing, TweenInfo.new(0.8, Enum.EasingStyle.Quart), {
-            Size = UDim2.new(2, 0, 2, 0)
-        }):Play()
-        TweenService:Create(explosionStroke, TweenInfo.new(0.8, Enum.EasingStyle.Quart), {
-            Transparency = 1, Thickness = 0
-        }):Play()
-        
-        TweenService:Create(loadingScreen, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(outerStroke, TweenInfo.new(0.5), {Transparency = 1}):Play()
-        TweenService:Create(innerStroke, TweenInfo.new(0.5), {Transparency = 1}):Play()
-        
+        if pulseThread then task.cancel(pulseThread) end
+        TweenService:Create(loadingScreen, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(shipBody, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(shipPoint, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+        for _, trail in pairs(trails) do TweenService:Create(trail.frame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play() end
+        for _, line in pairs(longLines) do TweenService:Create(line, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play() end
         for i = 1, 5 do
-            TweenService:Create(phases[i].indicator, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(phases[i].label, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
+            TweenService:Create(phases[i].indicator, TweenInfo.new(0.25), {TextTransparency = 1}):Play()
+            TweenService:Create(phases[i].label, TweenInfo.new(0.25), {TextTransparency = 1}):Play()
         end
-        
-        TweenService:Create(blurEffect, TweenInfo.new(0.4), {Size = 0}):Play()
-        task.wait(0.6)
+        TweenService:Create(blurEffect, TweenInfo.new(0.3), {Size = 0}):Play()
+        task.wait(0.5)
         gui:Destroy()
         blurEffect:Destroy()
         if onComplete then onComplete() end
@@ -900,6 +1101,7 @@ local function EnsureIconsReady(callback)
     end
 end
 
+-- Enhanced Notification System (preserved)
 function Patriot:Notify(title, message, duration, iconType)
     duration = duration or 5
     iconType = iconType or "info"
@@ -916,42 +1118,29 @@ function Patriot:Notify(title, message, duration, iconType)
     frame.Size = UDim2.new(0, width, 0, height)
     frame.Position = UDim2.new(1, width + 20, 1, -15)
     frame.AnchorPoint = Vector2.new(1, 1)
-    frame.BackgroundColor3 = Patriot.Theme.CardBackground
+    frame.BackgroundColor3 = Patriot.Theme.Header
+    frame.BackgroundTransparency = 0.9
     frame.BorderSizePixel = 0
-    frame.ClipsDescendants = true
     frame.Parent = notifGui
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
+
+    -- Add gradient to notification
+    local notifGradient = Instance.new("UIGradient", frame)
+    notifGradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.1),
+        NumberSequenceKeypoint.new(0.5, 0),
+        NumberSequenceKeypoint.new(1, 0.1)
+    })
 
     local stroke = Instance.new("UIStroke", frame)
     stroke.Color = Patriot.Theme.Accent
     stroke.Thickness = 1
-    stroke.Transparency = 0.6
-
-    local gradient = Instance.new("UIGradient", frame)
-    gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.CardBackground),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.SecondaryBackground)
-    })
-    gradient.Rotation = 45
-
-    local glowEffect = Instance.new("Frame")
-    glowEffect.Size = UDim2.new(1, 8, 1, 8)
-    glowEffect.Position = UDim2.new(0.5, 0, 0.5, 0)
-    glowEffect.AnchorPoint = Vector2.new(0.5, 0.5)
-    glowEffect.BackgroundTransparency = 1
-    glowEffect.ZIndex = 0
-    glowEffect.Parent = frame
-    Instance.new("UICorner", glowEffect).CornerRadius = UDim.new(0, 8)
-    
-    local glowStroke = Instance.new("UIStroke", glowEffect)
-    glowStroke.Color = Patriot.Theme.Accent
-    glowStroke.Thickness = 2
-    glowStroke.Transparency = 0.9
+    stroke.Transparency = 0.5
 
     local progressBg = Instance.new("Frame")
-    progressBg.Size = UDim2.new(1, 0, 0, 3)
-    progressBg.Position = UDim2.new(0, 0, 1, -3)
-    progressBg.BackgroundColor3 = Color3.fromRGB(30, 30, 36)
+    progressBg.Size = UDim2.new(1, 0, 0, 2)
+    progressBg.Position = UDim2.new(0, 0, 1, -2)
+    progressBg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     progressBg.BorderSizePixel = 0
     progressBg.Parent = frame
 
@@ -960,12 +1149,6 @@ function Patriot:Notify(title, message, duration, iconType)
     progressBar.BackgroundColor3 = Patriot.Theme.Accent
     progressBar.BorderSizePixel = 0
     progressBar.Parent = progressBg
-    
-    local progressGradient = Instance.new("UIGradient", progressBar)
-    progressGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Accent),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.AccentHover)
-    })
 
     local iconSize = height - 35
     local icon = Instance.new("ImageLabel")
@@ -1025,24 +1208,22 @@ function Patriot:Notify(title, message, duration, iconType)
         for i = #Internal.NotificationList, 1, -1 do
             local n = Internal.NotificationList[i]
             if n and n.frame and n.frame.Parent then
-                TweenService:Create(n.frame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -15, 1, -15 - yOffset)}):Play()
+                TweenService:Create(n.frame, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -15, 1, -15 - yOffset)}):Play()
                 yOffset = yOffset + n.height + 12
             end
         end
     end
 
-    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -15, 1, -15)}):Play()
-    TweenService:Create(glowStroke, TweenInfo.new(0.5), {Transparency = 0.9}):Play()
-    task.wait(0.15)
+    TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -15, 1, -15)}):Play()
+    task.wait(0.1)
     restack()
 
     local function dismiss()
         for i, n in ipairs(Internal.NotificationList) do
             if n.id == id then table.remove(Internal.NotificationList, i) break end
         end
-        TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(1, width + 20, frame.Position.Y.Scale, frame.Position.Y.Offset)}):Play()
-        TweenService:Create(glowStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
-        task.wait(0.4)
+        TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Position = UDim2.new(1, width + 20, frame.Position.Y.Scale, frame.Position.Y.Offset)}):Play()
+        task.wait(0.3)
         notifGui:Destroy()
         restack()
     end
@@ -1058,6 +1239,7 @@ function Patriot:Notify(title, message, duration, iconType)
     clickBtn.MouseButton1Click:Connect(dismiss)
 end
 
+-- Enhanced Changelog Panel
 local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth, mainFrame, gap)
     panelWidth = panelWidth or 220
     local isOpen = false
@@ -1066,34 +1248,40 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
     panel.Name = "ChangelogPanel"
     panel.Size = UDim2.new(0, 0, 0, panelHeight)
     panel.Position = UDim2.new(1, gap, 0, 0)
-    panel.BackgroundColor3 = Patriot.Theme.CardBackground
+    panel.BackgroundColor3 = Patriot.Theme.Background
+    panel.BackgroundTransparency = 0.9
     panel.BorderSizePixel = 0
     panel.ClipsDescendants = true
     panel.Parent = mainFrame
-    Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 8)
+
+    -- Add glass gradient to panel
+    local panelGradient = Instance.new("UIGradient", panel)
+    panelGradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.1),
+        NumberSequenceKeypoint.new(0.5, 0),
+        NumberSequenceKeypoint.new(1, 0.1)
+    })
+    panelGradient.Rotation = 45
 
     local panelStroke = Instance.new("UIStroke", panel)
     panelStroke.Color = Patriot.Theme.Accent
-    panelStroke.Thickness = 1.5
+    panelStroke.Thickness = 1
     panelStroke.Transparency = 1
-
-    local panelGradient = Instance.new("UIGradient", panel)
-    panelGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.CardBackground),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.Background)
-    })
 
     local panelHeader = Instance.new("Frame")
     panelHeader.Size = UDim2.new(1, 0, 0, 50)
     panelHeader.BackgroundColor3 = Patriot.Theme.Header
+    panelHeader.BackgroundTransparency = 0.85
     panelHeader.BorderSizePixel = 0
     panelHeader.Parent = panel
-    Instance.new("UICorner", panelHeader).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", panelHeader).CornerRadius = UDim.new(0, 8)
 
     local panelHeaderFix = Instance.new("Frame")
     panelHeaderFix.Size = UDim2.new(1, 0, 0, 8)
     panelHeaderFix.Position = UDim2.new(0, 0, 1, -8)
     panelHeaderFix.BackgroundColor3 = Patriot.Theme.Header
+    panelHeaderFix.BackgroundTransparency = 0.85
     panelHeaderFix.BorderSizePixel = 0
     panelHeaderFix.Parent = panelHeader
 
@@ -1143,9 +1331,8 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
     scrollFrame.Position = UDim2.new(0, 0, 0, 55)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.BorderSizePixel = 0
-    scrollFrame.ScrollBarThickness = 3
+    scrollFrame.ScrollBarThickness = 4
     scrollFrame.ScrollBarImageColor3 = Patriot.Theme.Accent
-    scrollFrame.ScrollBarImageTransparency = 0.5
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
     scrollFrame.Parent = panel
@@ -1153,11 +1340,11 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
     local scrollPadding = Instance.new("UIPadding", scrollFrame)
     scrollPadding.PaddingLeft = UDim.new(0, 10)
     scrollPadding.PaddingRight = UDim.new(0, 10)
-    scrollPadding.PaddingTop = UDim.new(0, 8)
-    scrollPadding.PaddingBottom = UDim.new(0, 8)
+    scrollPadding.PaddingTop = UDim.new(0, 5)
+    scrollPadding.PaddingBottom = UDim.new(0, 5)
 
     local contentLayout = Instance.new("UIListLayout", scrollFrame)
-    contentLayout.Padding = UDim.new(0, 12)
+    contentLayout.Padding = UDim.new(0, 10)
     contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     for i, update in ipairs(Patriot.Changelog) do
@@ -1169,12 +1356,12 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
         entry.Parent = scrollFrame
 
         local entryLayout = Instance.new("UIListLayout", entry)
-        entryLayout.Padding = UDim.new(0, 6)
+        entryLayout.Padding = UDim.new(0, 5)
 
         local versionLabel = Instance.new("TextLabel")
         versionLabel.Size = UDim2.new(1, 0, 0, 22)
         versionLabel.BackgroundTransparency = 1
-        versionLabel.Text = update.Version .. "  â€¢  " .. update.Date
+        versionLabel.Text = update.Version .. "  •  " .. update.Date
         versionLabel.TextColor3 = Patriot.Theme.Accent
         versionLabel.TextSize = 14
         versionLabel.Font = Enum.Font.ArimoBold
@@ -1187,7 +1374,7 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
             changeLabel.Size = UDim2.new(1, 0, 0, 0)
             changeLabel.AutomaticSize = Enum.AutomaticSize.Y
             changeLabel.BackgroundTransparency = 1
-            changeLabel.Text = "  â€¢  " .. change
+            changeLabel.Text = "  •  " .. change
             changeLabel.TextColor3 = Patriot.Theme.TextDim
             changeLabel.TextSize = 12
             changeLabel.Font = Enum.Font.ArimoBold
@@ -1199,7 +1386,7 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
 
         if i < #Patriot.Changelog then
             local divWrapper = Instance.new("Frame")
-            divWrapper.Size = UDim2.new(1, 0, 0, 3)
+            divWrapper.Size = UDim2.new(1, 0, 0, 2)
             divWrapper.BackgroundTransparency = 1
             divWrapper.LayoutOrder = i * 2 + 1
             divWrapper.Parent = scrollFrame
@@ -1207,23 +1394,27 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
             local div = Instance.new("Frame")
             div.Size = UDim2.new(1, 0, 0, 1)
             div.BackgroundColor3 = Patriot.Theme.Divider
+            div.BackgroundTransparency = 0.5
             div.BorderSizePixel = 0
             div.Parent = divWrapper
         end
     end
 
+    -- Add flowing border to panel
+    createFlowingBorder(panel, 8, 1, 0.3)
+
     local function toggle(changelogIcon, container, currentContainerWidth)
         isOpen = not isOpen
         if isOpen then
-            TweenService:Create(panelStroke, TweenInfo.new(0.25), {Transparency = 0.3}):Play()
-            TweenService:Create(panel, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, panelWidth, 0, panelHeight)}):Play()
-            TweenService:Create(container, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, currentContainerWidth + gap + panelWidth, 0, panelHeight)}):Play()
-            if changelogIcon then TweenService:Create(changelogIcon, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Rotation = 180}):Play() end
+            TweenService:Create(panelStroke, TweenInfo.new(0.2), {Transparency = 0.3}):Play()
+            TweenService:Create(panel, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, panelWidth, 0, panelHeight)}):Play()
+            TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, currentContainerWidth + gap + panelWidth, 0, panelHeight)}):Play()
+            if changelogIcon then TweenService:Create(changelogIcon, TweenInfo.new(0.3), {Rotation = 180}):Play() end
         else
             TweenService:Create(panelStroke, TweenInfo.new(0.2), {Transparency = 1}):Play()
-            TweenService:Create(panel, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, panelHeight)}):Play()
-            TweenService:Create(container, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, currentContainerWidth, 0, panelHeight)}):Play()
-            if changelogIcon then TweenService:Create(changelogIcon, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Rotation = 0}):Play() end
+            TweenService:Create(panel, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, panelHeight)}):Play()
+            TweenService:Create(container, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, currentContainerWidth, 0, panelHeight)}):Play()
+            if changelogIcon then TweenService:Create(changelogIcon, TweenInfo.new(0.3), {Rotation = 0}):Play() end
         end
     end
 
@@ -1231,6 +1422,7 @@ local function CreateChangelogPanel(parent, windowWidth, panelHeight, panelWidth
     return panel, toggle, function() return isOpen end, panelWidth
 end
 
+-- Enhanced User Info Panel
 local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth, mainFrame, gap, startOpen)
     panelWidth = panelWidth or 180
     local isOpen = startOpen or false
@@ -1247,34 +1439,40 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     panel.Size = UDim2.new(0, isOpen and panelWidth or 0, 0, panelHeight)
     panel.Position = UDim2.new(0, -(gap), 0, 0)
     panel.AnchorPoint = Vector2.new(1, 0)
-    panel.BackgroundColor3 = Patriot.Theme.CardBackground
+    panel.BackgroundColor3 = Patriot.Theme.Background
+    panel.BackgroundTransparency = 0.9
     panel.BorderSizePixel = 0
     panel.ClipsDescendants = true
     panel.Parent = mainFrame
-    Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 8)
+
+    -- Add glass gradient to panel
+    local panelGradient = Instance.new("UIGradient", panel)
+    panelGradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.1),
+        NumberSequenceKeypoint.new(0.5, 0),
+        NumberSequenceKeypoint.new(1, 0.1)
+    })
+    panelGradient.Rotation = -45
 
     local panelStroke = Instance.new("UIStroke", panel)
     panelStroke.Color = Patriot.Theme.Accent
-    panelStroke.Thickness = 1.5
+    panelStroke.Thickness = 1
     panelStroke.Transparency = isOpen and 0.3 or 1
-
-    local panelGradient = Instance.new("UIGradient", panel)
-    panelGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.CardBackground),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.Background)
-    })
 
     local panelHeader = Instance.new("Frame")
     panelHeader.Size = UDim2.new(1, 0, 0, 50)
     panelHeader.BackgroundColor3 = Patriot.Theme.Header
+    panelHeader.BackgroundTransparency = 0.85
     panelHeader.BorderSizePixel = 0
     panelHeader.Parent = panel
-    Instance.new("UICorner", panelHeader).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", panelHeader).CornerRadius = UDim.new(0, 8)
 
     local panelHeaderFix = Instance.new("Frame")
     panelHeaderFix.Size = UDim2.new(1, 0, 0, 8)
     panelHeaderFix.Position = UDim2.new(0, 0, 1, -8)
     panelHeaderFix.BackgroundColor3 = Patriot.Theme.Header
+    panelHeaderFix.BackgroundTransparency = 0.85
     panelHeaderFix.BorderSizePixel = 0
     panelHeaderFix.Parent = panelHeader
 
@@ -1348,15 +1546,15 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     avatarGlow.Position = UDim2.new(0.5, 0, 0.5, 0)
     avatarGlow.AnchorPoint = Vector2.new(0.5, 0.5)
     avatarGlow.BackgroundColor3 = Patriot.Theme.Accent
-    avatarGlow.BackgroundTransparency = 0.4
+    avatarGlow.BackgroundTransparency = 0.6
     avatarGlow.BorderSizePixel = 0
     avatarGlow.Parent = avatarWrapper
-    Instance.new("UICorner", avatarGlow).CornerRadius = UDim.new(0, 4)
+    Instance.new("UICorner", avatarGlow).CornerRadius = UDim.new(0, 6)
 
     local avatarGlowStroke = Instance.new("UIStroke", avatarGlow)
     avatarGlowStroke.Color = Patriot.Theme.Accent
     avatarGlowStroke.Thickness = 1.5
-    avatarGlowStroke.Transparency = 0.2
+    avatarGlowStroke.Transparency = 0.3
 
     local avatarContainer = Instance.new("Frame")
     avatarContainer.Size = UDim2.new(0, avatarSize, 0, avatarSize)
@@ -1366,7 +1564,7 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     avatarContainer.BorderSizePixel = 0
     avatarContainer.ClipsDescendants = true
     avatarContainer.Parent = avatarWrapper
-    Instance.new("UICorner", avatarContainer).CornerRadius = UDim.new(0, 4)
+    Instance.new("UICorner", avatarContainer).CornerRadius = UDim.new(0, 6)
 
     local avatarImage = Instance.new("ImageLabel")
     avatarImage.Size = UDim2.new(1, 0, 1, 0)
@@ -1396,6 +1594,7 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     divider1.Position = UDim2.new(0.5, 0, 0, 0)
     divider1.AnchorPoint = Vector2.new(0.5, 0)
     divider1.BackgroundColor3 = Patriot.Theme.Divider
+    divider1.BackgroundTransparency = 0.5
     divider1.BorderSizePixel = 0
     divider1.LayoutOrder = 3
     divider1.Parent = contentFrame
@@ -1461,6 +1660,7 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     divider2.Position = UDim2.new(0.5, 0, 0, 0)
     divider2.AnchorPoint = Vector2.new(0.5, 0)
     divider2.BackgroundColor3 = Patriot.Theme.Divider
+    divider2.BackgroundTransparency = 0.5
     divider2.BorderSizePixel = 0
     divider2.LayoutOrder = 6
     divider2.Parent = contentFrame
@@ -1521,6 +1721,7 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     divider3.Position = UDim2.new(0.5, 0, 0, 0)
     divider3.AnchorPoint = Vector2.new(0.5, 0)
     divider3.BackgroundColor3 = Patriot.Theme.Divider
+    divider3.BackgroundTransparency = 0.5
     divider3.BorderSizePixel = 0
     divider3.LayoutOrder = 8
     divider3.Parent = contentFrame
@@ -1586,16 +1787,19 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     end)
     panel.Destroying:Connect(function() clockRunning = false end)
 
+    -- Add flowing border to panel
+    createFlowingBorder(panel, 8, 1, 0.3)
+
     local function toggle(userIcon, container, baseWidth)
         isOpen = not isOpen
         if isOpen then
-            TweenService:Create(panelStroke, TweenInfo.new(0.25), {Transparency = 0.3}):Play()
-            TweenService:Create(panel, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, panelWidth, 0, panelHeight)}):Play()
-            TweenService:Create(container, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, baseWidth + gap + panelWidth, 0, panelHeight)}):Play()
+            TweenService:Create(panelStroke, TweenInfo.new(0.2), {Transparency = 0.3}):Play()
+            TweenService:Create(panel, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, panelWidth, 0, panelHeight)}):Play()
+            TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, baseWidth + gap + panelWidth, 0, panelHeight)}):Play()
         else
             TweenService:Create(panelStroke, TweenInfo.new(0.2), {Transparency = 1}):Play()
-            TweenService:Create(panel, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, panelHeight)}):Play()
-            TweenService:Create(container, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, baseWidth, 0, panelHeight)}):Play()
+            TweenService:Create(panel, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, panelHeight)}):Play()
+            TweenService:Create(container, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, baseWidth, 0, panelHeight)}):Play()
         end
     end
 
@@ -1603,14 +1807,7 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     return panel, toggle, function() return isOpen end, panelWidth
 end
 
-local function handleKeylessSkip()
-    getgenv().SCRIPT_KEY = "KEYLESS"
-    getgenv().PatriotLoaded = false
-    Patriot:Notify("Access Granted", "Keyless access approved!", 3, "success")
-    task.wait(0.3)
-    if Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
-end
-
+-- Enhanced Centered UI Builder
 local function BuildCenteredUI(windowWidth, windowHeight, panelHeight, userPanelWidth, changelogPanelWidth, gap, buildContent)
     local gui = buildContent.gui
 
@@ -1628,25 +1825,27 @@ local function BuildCenteredUI(windowWidth, windowHeight, panelHeight, userPanel
     mainFrame.Position = UDim2.new(0.5, 0, 0, 0)
     mainFrame.AnchorPoint = Vector2.new(0.5, 0)
     mainFrame.BackgroundColor3 = Patriot.Theme.Background
+    mainFrame.BackgroundTransparency = 0.85
     mainFrame.BorderSizePixel = 0
     mainFrame.Parent = container
-    Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 12)
 
-    local mainStroke = Instance.new("UIStroke", mainFrame)
-    mainStroke.Color = Patriot.Theme.Accent
-    mainStroke.Thickness = 1.5
-    mainStroke.Transparency = 0.3
-
+    -- Glass gradient for main frame
     local mainGradient = Instance.new("UIGradient", mainFrame)
-    mainGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Background),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(14, 14, 16)),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.Background)
+    mainGradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.1),
+        NumberSequenceKeypoint.new(0.5, 0),
+        NumberSequenceKeypoint.new(1, 0.1)
     })
     mainGradient.Rotation = 135
 
-    spawnAmbientParticles(mainFrame, 15, nil)
-    createScanLine(mainFrame, windowWidth, windowHeight)
+    local mainStroke = Instance.new("UIStroke", mainFrame)
+    mainStroke.Color = Patriot.Theme.Accent
+    mainStroke.Thickness = 1
+    mainStroke.Transparency = 0.4
+
+    -- Add flowing border effect
+    createFlowingBorder(mainFrame, 12, 2, 0.6)
 
     local userPanel, toggleUserPanel, isUserOpen, userPanelActualWidth = CreateUserInfoPanel(container, windowWidth, panelHeight, userPanelWidth, mainFrame, gap, false)
     local changelogPanel, toggleChangelog, isChangelogOpen, changelogPanelActualWidth = CreateChangelogPanel(container, windowWidth, panelHeight, changelogPanelWidth, mainFrame, gap)
@@ -1677,8 +1876,8 @@ local function BuildCenteredUI(windowWidth, windowHeight, panelHeight, userPanel
     end
 
     local function closeAllPanels(userIcon, changelogIcon, callback)
-        if isChangelogOpen() then toggleCL(changelogIcon) task.wait(0.4) end
-        if isUserOpen() then toggleUser(userIcon) task.wait(0.4) end
+        if isChangelogOpen() then toggleCL(changelogIcon) task.wait(0.35) end
+        if isUserOpen() then toggleUser(userIcon) task.wait(0.35) end
         if callback then callback() end
     end
 
@@ -1694,6 +1893,15 @@ local function BuildCenteredUI(windowWidth, windowHeight, panelHeight, userPanel
     }
 end
 
+local function handleKeylessSkip()
+    getgenv().SCRIPT_KEY = "KEYLESS"
+    getgenv().PatriotLoaded = false
+    Patriot:Notify("Access Granted", "Keyless access approved!", 3, "success")
+    task.wait(0.3)
+    if Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+end
+
+-- Enhanced Keyless UI
 local function BuildKeylessUI()
     local oldGui = hui:FindFirstChild("PatriotKeylessSystem")
     if oldGui then oldGui:Destroy() end
@@ -1704,8 +1912,8 @@ local function BuildKeylessUI()
 
     local mobile = isMobile()
     local padding = 14
-    local windowWidth = 300
-    local windowHeight = 265
+    local windowWidth = 320
+    local windowHeight = 280
     local userPanelWidth = 165
     local changelogPanelWidth = 200
     local gap = 12
@@ -1724,21 +1932,17 @@ local function BuildKeylessUI()
     local header = Instance.new("Frame")
     header.Size = UDim2.new(1, 0, 0, 50)
     header.BackgroundColor3 = Patriot.Theme.Header
+    header.BackgroundTransparency = 0.85
     header.BorderSizePixel = 0
     header.Active = true
     header.Parent = main
-    Instance.new("UICorner", header).CornerRadius = UDim.new(0, 6)
-
-    local headerGradient = Instance.new("UIGradient", header)
-    headerGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Header),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 22, 28))
-    })
+    Instance.new("UICorner", header).CornerRadius = UDim.new(0, 12)
 
     local headerFix = Instance.new("Frame")
     headerFix.Size = UDim2.new(1, 0, 0, 8)
     headerFix.Position = UDim2.new(0, 0, 1, -8)
     headerFix.BackgroundColor3 = Patriot.Theme.Header
+    headerFix.BackgroundTransparency = 0.85
     headerFix.BorderSizePixel = 0
     headerFix.Parent = header
 
@@ -1790,22 +1994,15 @@ local function BuildKeylessUI()
     successBox.Position = UDim2.new(0.5, 0, 0, contentY)
     successBox.AnchorPoint = Vector2.new(0.5, 0)
     successBox.BackgroundColor3 = Patriot.Theme.Success
-    successBox.BackgroundTransparency = 0.88
+    successBox.BackgroundTransparency = 0.85
     successBox.BorderSizePixel = 0
     successBox.Parent = main
-    Instance.new("UICorner", successBox).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", successBox).CornerRadius = UDim.new(0, 8)
 
     local successStroke = Instance.new("UIStroke", successBox)
     successStroke.Color = Patriot.Theme.Success
     successStroke.Thickness = 1
     successStroke.Transparency = 0.4
-
-    local successGradient = Instance.new("UIGradient", successBox)
-    successGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 180, 95)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 150, 80))
-    })
-    successGradient.Rotation = 45
 
     local checkIcon = Instance.new("ImageLabel")
     checkIcon.Size = UDim2.new(0, 24, 0, 24)
@@ -1840,128 +2037,88 @@ local function BuildKeylessUI()
     keylessText.Parent = main
 
     local divider = Instance.new("Frame")
-    divider.Size = UDim2.new(1, 0, 0, 1)
+    divider.Size = UDim2.new(1, 0, 0, 2)
     divider.Position = UDim2.new(0, 0, 0, contentY + 88)
     divider.BackgroundColor3 = Patriot.Theme.Divider
+    divider.BackgroundTransparency = 0.5
     divider.BorderSizePixel = 0
     divider.Parent = main
 
-    local launchBtn = Instance.new("TextButton")
-    launchBtn.Size = UDim2.new(0.75, 0, 0, 42)
-    launchBtn.Position = UDim2.new(0.5, 0, 0, contentY + 103)
-    launchBtn.AnchorPoint = Vector2.new(0.5, 0)
-    launchBtn.BackgroundColor3 = Patriot.Theme.Accent
-    launchBtn.BorderSizePixel = 0
-    launchBtn.Text = ""
-    launchBtn.AutoButtonColor = false
-    launchBtn.Parent = main
-    Instance.new("UICorner", launchBtn).CornerRadius = UDim.new(0, 6)
-
-    local launchStroke = Instance.new("UIStroke", launchBtn)
-    launchStroke.Color = Patriot.Theme.AccentHover
-    launchStroke.Thickness = 1
-    launchStroke.Transparency = 0.4
-
-    local launchGradient = Instance.new("UIGradient", launchBtn)
-    launchGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Accent),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.AccentHover)
-    })
-    launchGradient.Rotation = 90
-
-    local launchContent = Instance.new("Frame")
-    launchContent.Size = UDim2.new(1, 0, 1, 0)
-    launchContent.BackgroundTransparency = 1
-    launchContent.Parent = launchBtn
-
-    local launchLayout = Instance.new("UIListLayout", launchContent)
-    launchLayout.FillDirection = Enum.FillDirection.Horizontal
-    launchLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    launchLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-    launchLayout.Padding = UDim.new(0, 8)
-
-    local launchIcon = Instance.new("ImageLabel")
-    launchIcon.Size = UDim2.new(0, 18, 0, 18)
-    launchIcon.BackgroundTransparency = 1
-    launchIcon.Image = getIcon("shield")
-    launchIcon.ImageColor3 = Patriot.Theme.Text
-    launchIcon.ScaleType = Enum.ScaleType.Fit
-    launchIcon.LayoutOrder = 1
-    launchIcon.Parent = launchContent
-
-    local launchLabel = Instance.new("TextLabel")
-    launchLabel.Size = UDim2.new(0, 0, 0, 18)
-    launchLabel.AutomaticSize = Enum.AutomaticSize.X
-    launchLabel.BackgroundTransparency = 1
-    launchLabel.Text = "Launch Script"
-    launchLabel.TextColor3 = Patriot.Theme.Text
-    launchLabel.TextSize = mobile and 14 or 15
-    launchLabel.Font = Enum.Font.ArimoBold
-    launchLabel.LayoutOrder = 2
-    launchLabel.Parent = launchContent
-
-    launchBtn.MouseEnter:Connect(function()
-        TweenService:Create(launchBtn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.AccentHover}):Play()
-        TweenService:Create(launchStroke, TweenInfo.new(0.2), {Transparency = 0.2}):Play()
-    end)
-    launchBtn.MouseLeave:Connect(function()
-        TweenService:Create(launchBtn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.Accent}):Play()
-        TweenService:Create(launchStroke, TweenInfo.new(0.2), {Transparency = 0.4}):Play()
-    end)
+    local launchBtn = createEnhancedButton("Launch Script", "shield", true, main, contentY + 103, 0.75)
 
     local bottomY = contentY + 153
 
-    local function createBottomButton(iconKey, xOffset)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0, 38, 0, 38)
-        btn.Position = UDim2.new(0.5, xOffset, 0, bottomY)
-        btn.AnchorPoint = Vector2.new(0.5, 0)
-        btn.BackgroundColor3 = Patriot.Theme.Input
-        btn.BorderSizePixel = 0
-        btn.Text = ""
-        btn.AutoButtonColor = false
-        btn.Parent = main
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    local userBtn = Instance.new("TextButton")
+    userBtn.Size = UDim2.new(0, 36, 0, 36)
+    userBtn.Position = UDim2.new(0.5, -44, 0, bottomY)
+    userBtn.AnchorPoint = Vector2.new(0.5, 0)
+    userBtn.BackgroundColor3 = Patriot.Theme.Background
+    userBtn.BackgroundTransparency = 0.85
+    userBtn.BorderSizePixel = 0
+    userBtn.Text = ""
+    userBtn.AutoButtonColor = false
+    userBtn.Parent = main
+    Instance.new("UICorner", userBtn).CornerRadius = UDim.new(0, 8)
 
-        local btnStroke = Instance.new("UIStroke", btn)
-        btnStroke.Color = Patriot.Theme.Accent
-        btnStroke.Thickness = 1
-        btnStroke.Transparency = 0.8
+    local userIcon = Instance.new("ImageLabel")
+    userIcon.Size = UDim2.new(0, 18, 0, 18)
+    userIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    userIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    userIcon.BackgroundTransparency = 1
+    userIcon.Image = getIcon("user")
+    userIcon.ImageColor3 = Patriot.Theme.TextDim
+    userIcon.ScaleType = Enum.ScaleType.Fit
+    userIcon.Parent = userBtn
+    userBtn.MouseEnter:Connect(function() TweenService:Create(userIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Accent}):Play() end)
+    userBtn.MouseLeave:Connect(function() TweenService:Create(userIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.TextDim}):Play() end)
 
-        local icon = Instance.new("ImageLabel")
-        icon.Size = UDim2.new(0, 18, 0, 18)
-        icon.Position = UDim2.new(0.5, 0, 0.5, 0)
-        icon.AnchorPoint = Vector2.new(0.5, 0.5)
-        icon.BackgroundTransparency = 1
-        icon.Image = getIcon(iconKey)
-        icon.ImageColor3 = Patriot.Theme.TextDim
-        icon.ScaleType = Enum.ScaleType.Fit
-        icon.Parent = btn
+    local discordBtn = Instance.new("TextButton")
+    discordBtn.Size = UDim2.new(0, 36, 0, 36)
+    discordBtn.Position = UDim2.new(0.5, 0, 0, bottomY)
+    discordBtn.AnchorPoint = Vector2.new(0.5, 0)
+    discordBtn.BackgroundColor3 = Patriot.Theme.Background
+    discordBtn.BackgroundTransparency = 0.85
+    discordBtn.BorderSizePixel = 0
+    discordBtn.Text = ""
+    discordBtn.AutoButtonColor = false
+    discordBtn.Parent = main
+    Instance.new("UICorner", discordBtn).CornerRadius = UDim.new(0, 8)
 
-        btn.MouseEnter:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.SecondaryBackground}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Transparency = 0.4}):Play()
-        end)
-        btn.MouseLeave:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.Input}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Transparency = 0.8}):Play()
-        end)
-        return btn, icon
-    end
-
-    local userBtn, userIcon = createBottomButton("user", -46)
-    local discordBtn, discordIcon = createBottomButton("discord", 0)
-    local changelogBtn, changelogIcon = createBottomButton("changelog", 46)
-
-    local discordBtn = discordBtn
-    local discordIcon = discordIcon
+    local discordIcon = Instance.new("ImageLabel")
+    discordIcon.Size = UDim2.new(0, 18, 0, 18)
+    discordIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    discordIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    discordIcon.BackgroundTransparency = 1
+    discordIcon.Image = getIcon("discord")
     discordIcon.ImageColor3 = Patriot.Theme.Discord
-    discordBtn.MouseEnter:Connect(function()
-        TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.DiscordHover}):Play()
-    end)
-    discordBtn.MouseLeave:Connect(function()
-        TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Discord}):Play()
-    end)
+    discordIcon.ScaleType = Enum.ScaleType.Fit
+    discordIcon.Parent = discordBtn
+    discordBtn.MouseEnter:Connect(function() TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.DiscordHover}):Play() end)
+    discordBtn.MouseLeave:Connect(function() TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Discord}):Play() end)
+
+    local changelogBtn = Instance.new("TextButton")
+    changelogBtn.Size = UDim2.new(0, 36, 0, 36)
+    changelogBtn.Position = UDim2.new(0.5, 44, 0, bottomY)
+    changelogBtn.AnchorPoint = Vector2.new(0.5, 0)
+    changelogBtn.BackgroundColor3 = Patriot.Theme.Background
+    changelogBtn.BackgroundTransparency = 0.85
+    changelogBtn.BorderSizePixel = 0
+    changelogBtn.Text = ""
+    changelogBtn.AutoButtonColor = false
+    changelogBtn.Parent = main
+    Instance.new("UICorner", changelogBtn).CornerRadius = UDim.new(0, 8)
+
+    local changelogIcon = Instance.new("ImageLabel")
+    changelogIcon.Size = UDim2.new(0, 18, 0, 18)
+    changelogIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    changelogIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    changelogIcon.BackgroundTransparency = 1
+    changelogIcon.Image = getIcon("changelog")
+    changelogIcon.ImageColor3 = Patriot.Theme.TextDim
+    changelogIcon.ScaleType = Enum.ScaleType.Fit
+    changelogIcon.Parent = changelogBtn
+    changelogBtn.MouseEnter:Connect(function() TweenService:Create(changelogIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Text}):Play() end)
+    changelogBtn.MouseLeave:Connect(function() TweenService:Create(changelogIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.TextDim}):Play() end)
 
     if #Patriot.Changelog == 0 then
         changelogBtn.Visible = false
@@ -1976,7 +2133,7 @@ local function BuildKeylessUI()
 
     local function closeDoorsThenExit(callback)
         ui.closeAllPanels(userIcon, changelogIcon, function()
-            doors.close(function() task.wait(0.35) if callback then callback() end end)
+            doors.close(function() task.wait(0.3) if callback then callback() end end)
         end)
     end
 
@@ -1984,10 +2141,10 @@ local function BuildKeylessUI()
         Patriot:Notify("Goodbye", "See you next time!", 2, "close")
         closeDoorsThenExit(function()
             fullCleanup()
-            TweenService:Create(container, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
-            TweenService:Create(main, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(mainStroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
-            task.wait(0.5) gui:Destroy()
+            TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
+            TweenService:Create(main, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+            TweenService:Create(mainStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
+            task.wait(0.4) gui:Destroy()
         end)
         if Patriot.Callbacks.OnClose then Patriot.Callbacks.OnClose() end
     end)
@@ -1998,10 +2155,10 @@ local function BuildKeylessUI()
         getgenv().PatriotLoaded = false
         closeDoorsThenExit(function()
             disableBlur()
-            TweenService:Create(container, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
-            TweenService:Create(main, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(mainStroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
-            task.wait(0.5) gui:Destroy()
+            TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
+            TweenService:Create(main, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+            TweenService:Create(mainStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
+            task.wait(0.4) gui:Destroy()
             if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
         end)
     end)
@@ -2014,17 +2171,18 @@ local function BuildKeylessUI()
     end)
 
     setupDragging(header, container)
-    TweenService:Create(container, TweenInfo.new(0.6, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, 0.45, 0)}):Play()
-    task.wait(0.7)
+    TweenService:Create(container, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, 0.45, 0)}):Play()
+    task.wait(0.6)
     doors.open(function()
         checkIcon.Size = UDim2.new(0, 0, 0, 0)
-        TweenService:Create(checkIcon, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 24, 0, 24)}):Play()
-        task.wait(0.25)
+        TweenService:Create(checkIcon, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 24, 0, 24)}):Play()
+        task.wait(0.2)
         ui.toggleUser(userIcon)
-        if #Patriot.Changelog > 0 then task.wait(0.35) ui.toggleCL(changelogIcon) end
+        if #Patriot.Changelog > 0 then task.wait(0.3) ui.toggleCL(changelogIcon) end
     end)
 end
 
+-- Enhanced Key UI
 local function BuildKeyUI()
     local oldGui = hui:FindFirstChild("PatriotKeySystem")
     if oldGui then oldGui:Destroy() end
@@ -2041,11 +2199,12 @@ local function BuildKeyUI()
     local shopDividerHeight = 1
     local shopExtra = showShop and (shopHeight + shopDividerHeight) or 0
     local baseWindowHeight = mobile and math.clamp(360 * scale, 320, 400) or 360
-    local windowWidth = mobile and math.clamp(400 * scale, 320, 440) or 400
+    local windowWidth = mobile and math.clamp(420 * scale, 360, 460) or 420
     local windowHeight = baseWindowHeight + shopExtra
     local elementHeight = mobile and math.clamp(56 * scale, 48, 62) or 56
     local buttonHeight = mobile and math.clamp(42 * scale, 38, 48) or 42
-    local statusHeight = mobile and math.clamp(60 * scale, 52, 68) or 60    local userPanelWidth = 180
+    local statusHeight = mobile and math.clamp(60 * scale, 52, 68) or 60
+    local userPanelWidth = 180
     local changelogPanelWidth = 220
     local gap = 12
 
@@ -2064,21 +2223,17 @@ local function BuildKeyUI()
     local header = Instance.new("Frame")
     header.Size = UDim2.new(1, 0, 0, 50)
     header.BackgroundColor3 = Patriot.Theme.Header
+    header.BackgroundTransparency = 0.85
     header.BorderSizePixel = 0
     header.Active = true
     header.Parent = mainFrame
-    Instance.new("UICorner", header).CornerRadius = UDim.new(0, 6)
-
-    local headerGradient = Instance.new("UIGradient", header)
-    headerGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Header),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 22, 28))
-    })
+    Instance.new("UICorner", header).CornerRadius = UDim.new(0, 12)
 
     local headerFix = Instance.new("Frame")
     headerFix.Size = UDim2.new(1, 0, 0, 6)
     headerFix.Position = UDim2.new(0, 0, 1, -6)
     headerFix.BackgroundColor3 = Patriot.Theme.Header
+    headerFix.BackgroundTransparency = 0.85
     headerFix.BorderSizePixel = 0
     headerFix.Parent = header
 
@@ -2125,226 +2280,102 @@ local function BuildKeyUI()
 
     local contentStartY = 60
 
-    local statusFrame = Instance.new("Frame")
-    statusFrame.Size = UDim2.new(0.94, 0, 0, statusHeight)
-    statusFrame.Position = UDim2.new(0.5, 0, 0, contentStartY)
-    statusFrame.AnchorPoint = Vector2.new(0.5, 0)
-    statusFrame.BackgroundColor3 = Patriot.Theme.Input
-    statusFrame.BorderSizePixel = 0
-    statusFrame.ClipsDescendants = true
-    statusFrame.Parent = mainFrame
-    Instance.new("UICorner", statusFrame).CornerRadius = UDim.new(0, 6)
-
-    local statusStroke = Instance.new("UIStroke", statusFrame)
-    statusStroke.Color = Patriot.Theme.Accent
-    statusStroke.Thickness = 1
-    statusStroke.Transparency = 0.7
-
-    local statusGradient = Instance.new("UIGradient", statusFrame)
-    statusGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Patriot.Theme.Input),
-        ColorSequenceKeypoint.new(1, Patriot.Theme.SecondaryBackground)
-    })
-
-    local statusGlow = createGlowRing(statusFrame, statusHeight * 0.5, UDim2.new(0.1, 0, 0.5, 0), Patriot.Theme.Accent)
-
-    local statusIcon = Instance.new("ImageLabel")
-    statusIcon.Size = UDim2.new(0, 24, 0, 24)
-    statusIcon.Position = UDim2.new(0, 16, 0.5, 0)
-    statusIcon.AnchorPoint = Vector2.new(0, 0.5)
-    statusIcon.BackgroundTransparency = 1
-    statusIcon.Image = getIcon("lock")
-    statusIcon.ImageColor3 = Patriot.Theme.StatusIdle
-    statusIcon.ScaleType = Enum.ScaleType.Fit
-    statusIcon.Parent = statusFrame
-
-    local statusLabel = Instance.new("TextLabel")
-    statusLabel.Size = UDim2.new(1, -60, 1, 0)
-    statusLabel.Position = UDim2.new(0, 52, 0, 0)
-    statusLabel.BackgroundTransparency = 1
-    statusLabel.Text = Patriot.Appearance.Subtitle
-    statusLabel.TextColor3 = Patriot.Theme.StatusIdle
-    statusLabel.TextSize = mobile and 17 or 18
-    statusLabel.Font = Enum.Font.ArimoBold
-    statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-    statusLabel.TextTruncate = Enum.TextTruncate.AtEnd
-    statusLabel.Parent = statusFrame
+    -- Create status frame
+    local statusFrame, statusIcon, statusLabel, statusPulse = createEnhancedStatusFrame(mainFrame, contentStartY, Patriot.Appearance.Subtitle, "lock")
+    statusPulse()
 
     local inputStartY = contentStartY + statusHeight + 10
 
-    local inputFrame = Instance.new("Frame")
-    inputFrame.Size = UDim2.new(0.94, 0, 0, elementHeight)
-    inputFrame.Position = UDim2.new(0.5, 0, 0, inputStartY)
-    inputFrame.AnchorPoint = Vector2.new(0.5, 0)
-    inputFrame.BackgroundColor3 = Patriot.Theme.Input
-    inputFrame.BorderSizePixel = 0
-    inputFrame.ClipsDescendants = true
-    inputFrame.Parent = mainFrame
-    Instance.new("UICorner", inputFrame).CornerRadius = UDim.new(0, 6)
-
-    local inputStroke = Instance.new("UIStroke", inputFrame)
-    inputStroke.Color = Patriot.Theme.Accent
-    inputStroke.Thickness = 1
-    inputStroke.Transparency = 0.6
-
-    local textBox = Instance.new("TextBox")
-    textBox.Size = UDim2.new(1, -24, 1, 0)
-    textBox.Position = UDim2.new(0, 12, 0.5, 0)
-    textBox.AnchorPoint = Vector2.new(0, 0.5)
-    textBox.BackgroundTransparency = 1
-    textBox.Text = ""
-    textBox.TextColor3 = Patriot.Theme.Text
-    textBox.PlaceholderText = "Enter your key..."
-    textBox.PlaceholderColor3 = Patriot.Theme.TextDim
-    textBox.TextSize = mobile and 17 or 18
-    textBox.Font = Enum.Font.ArimoBold
-    textBox.ClearTextOnFocus = false
-    textBox.TextTruncate = Enum.TextTruncate.AtEnd
-    textBox.TextXAlignment = Enum.TextXAlignment.Left
-    textBox.Parent = inputFrame
-    textBox.Focused:Connect(function()
-        TweenService:Create(inputStroke, TweenInfo.new(0.2), {Transparency = 0.2}):Play()
-        TweenService:Create(inputFrame, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.SecondaryBackground}):Play()
-    end)
-    textBox.FocusLost:Connect(function()
-        TweenService:Create(inputStroke, TweenInfo.new(0.2), {Transparency = 0.6}):Play()
-        TweenService:Create(inputFrame, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.Input}):Play()
-    end)
+    -- Create input field
+    local textBox, inputFrame = createEnhancedInput(mainFrame, inputStartY, 0.94, "Enter your key...")
 
     local dividerY = inputStartY + elementHeight + 12
 
     local dividerLine = Instance.new("Frame")
-    dividerLine.Size = UDim2.new(1, 0, 0, 1)
+    dividerLine.Size = UDim2.new(1, 0, 0, 2)
     dividerLine.Position = UDim2.new(0, 0, 0, dividerY)
     dividerLine.BackgroundColor3 = Patriot.Theme.Divider
+    dividerLine.BackgroundTransparency = 0.5
     dividerLine.BorderSizePixel = 0
     dividerLine.Parent = mainFrame
 
     local acquireStartY = dividerY + 15
 
-    local function createButton(text, iconKey, isPrimary, yPos)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0.75, 0, 0, buttonHeight)
-        btn.Position = UDim2.new(0.5, 0, 0, yPos)
-        btn.AnchorPoint = Vector2.new(0.5, 0)
-        btn.BackgroundColor3 = isPrimary and Patriot.Theme.Accent or Patriot.Theme.Input
-        btn.BorderSizePixel = 0
-        btn.Text = ""
-        btn.AutoButtonColor = false
-        btn.Parent = mainFrame
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-
-        local btnStroke = Instance.new("UIStroke", btn)
-        btnStroke.Color = isPrimary and Patriot.Theme.AccentHover or Patriot.Theme.Accent
-        btnStroke.Thickness = 1
-        btnStroke.Transparency = isPrimary and 0.4 or 0.6
-
-        if isPrimary then
-            local btnGradient = Instance.new("UIGradient", btn)
-            btnGradient.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Patriot.Theme.Accent),
-                ColorSequenceKeypoint.new(1, Patriot.Theme.AccentHover)
-            })
-            btnGradient.Rotation = 90
-        end
-
-        local content = Instance.new("Frame")
-        content.Size = UDim2.new(1, 0, 1, 0)
-        content.BackgroundTransparency = 1
-        content.Parent = btn
-
-        local layout = Instance.new("UIListLayout", content)
-        layout.FillDirection = Enum.FillDirection.Horizontal
-        layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-        layout.VerticalAlignment = Enum.VerticalAlignment.Center
-        layout.Padding = UDim.new(0, 8)
-
-        local iconImg = Instance.new("ImageLabel")
-        iconImg.Size = UDim2.new(0, 18, 0, 18)
-        iconImg.BackgroundTransparency = 1
-        iconImg.Image = getIcon(iconKey)
-        iconImg.ImageColor3 = Patriot.Theme.Text
-        iconImg.ScaleType = Enum.ScaleType.Fit
-        iconImg.LayoutOrder = 1
-        iconImg.Parent = content
-
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(0, 0, 0, 20)
-        label.AutomaticSize = Enum.AutomaticSize.X
-        label.BackgroundTransparency = 1
-        label.Text = text
-        label.TextColor3 = Patriot.Theme.Text
-        label.TextSize = mobile and 14 or 15
-        label.Font = Enum.Font.ArimoBold
-        label.LayoutOrder = 2
-        label.Parent = content
-
-        local origColor = btn.BackgroundColor3
-        local hoverColor = isPrimary and Patriot.Theme.AccentHover or Patriot.Theme.Accent
-        btn.MouseEnter:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Transparency = 0.2}):Play()
-        end)
-        btn.MouseLeave:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = origColor}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Transparency = isPrimary and 0.4 or 0.6}):Play()
-        end)
-        return btn
-    end
-
-    local acquireBtn = createButton("Get Key", "user", false, acquireStartY)
-    local redeemBtn = createButton("Verify Key", "shield", true, acquireStartY + buttonHeight + 5)
+    local acquireBtn = createEnhancedButton("Get Key", "user", false, mainFrame, acquireStartY, 0.75)
+    local redeemBtn = createEnhancedButton("Verify Key", "shield", true, mainFrame, acquireStartY + buttonHeight + 5, 0.75)
     local bottomY = acquireStartY + buttonHeight * 2 + 10
 
-    local function createBottomButton(iconKey, xOffset)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0, 38, 0, 38)
-        btn.Position = UDim2.new(0.5, xOffset, 0, bottomY)
-        btn.AnchorPoint = Vector2.new(0.5, 0)
-        btn.BackgroundColor3 = Patriot.Theme.Input
-        btn.BorderSizePixel = 0
-        btn.Text = ""
-        btn.AutoButtonColor = false
-        btn.Parent = mainFrame
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    local userBtn = Instance.new("TextButton")
+    userBtn.Size = UDim2.new(0, 36, 0, 36)
+    userBtn.Position = UDim2.new(0.5, -44, 0, bottomY)
+    userBtn.AnchorPoint = Vector2.new(0.5, 0)
+    userBtn.BackgroundColor3 = Patriot.Theme.Background
+    userBtn.BackgroundTransparency = 0.85
+    userBtn.BorderSizePixel = 0
+    userBtn.Text = ""
+    userBtn.AutoButtonColor = false
+    userBtn.Parent = mainFrame
+    Instance.new("UICorner", userBtn).CornerRadius = UDim.new(0, 8)
 
-        local btnStroke = Instance.new("UIStroke", btn)
-        btnStroke.Color = Patriot.Theme.Accent
-        btnStroke.Thickness = 1
-        btnStroke.Transparency = 0.8
+    local userIcon = Instance.new("ImageLabel")
+    userIcon.Size = UDim2.new(0, 18, 0, 18)
+    userIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    userIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    userIcon.BackgroundTransparency = 1
+    userIcon.Image = getIcon("user")
+    userIcon.ImageColor3 = Patriot.Theme.TextDim
+    userIcon.ScaleType = Enum.ScaleType.Fit
+    userIcon.Parent = userBtn
+    userBtn.MouseEnter:Connect(function() TweenService:Create(userIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Accent}):Play() end)
+    userBtn.MouseLeave:Connect(function() TweenService:Create(userIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.TextDim}):Play() end)
 
-        local icon = Instance.new("ImageLabel")
-        icon.Size = UDim2.new(0, 18, 0, 18)
-        icon.Position = UDim2.new(0.5, 0, 0.5, 0)
-        icon.AnchorPoint = Vector2.new(0.5, 0.5)
-        icon.BackgroundTransparency = 1
-        icon.Image = getIcon(iconKey)
-        icon.ImageColor3 = Patriot.Theme.TextDim
-        icon.ScaleType = Enum.ScaleType.Fit
-        icon.Parent = btn
+    local discordBtn = Instance.new("TextButton")
+    discordBtn.Size = UDim2.new(0, 36, 0, 36)
+    discordBtn.Position = UDim2.new(0.5, 0, 0, bottomY)
+    discordBtn.AnchorPoint = Vector2.new(0.5, 0)
+    discordBtn.BackgroundColor3 = Patriot.Theme.Background
+    discordBtn.BackgroundTransparency = 0.85
+    discordBtn.BorderSizePixel = 0
+    discordBtn.Text = ""
+    discordBtn.AutoButtonColor = false
+    discordBtn.Parent = mainFrame
+    Instance.new("UICorner", discordBtn).CornerRadius = UDim.new(0, 8)
 
-        btn.MouseEnter:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.SecondaryBackground}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Transparency = 0.4}):Play()
-        end)
-        btn.MouseLeave:Connect(function()
-            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.Input}):Play()
-            TweenService:Create(btnStroke, TweenInfo.new(0.2), {Transparency = 0.8}):Play()
-        end)
-        return btn, icon
-    end
-
-    local userBtn, userIcon = createBottomButton("user", -46)
-    local discordBtn, discordIcon = createBottomButton("discord", 0)
-    local changelogBtn, changelogIcon = createBottomButton("changelog", 46)
-
+    local discordIcon = Instance.new("ImageLabel")
+    discordIcon.Size = UDim2.new(0, 18, 0, 18)
+    discordIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    discordIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    discordIcon.BackgroundTransparency = 1
+    discordIcon.Image = getIcon("discord")
     discordIcon.ImageColor3 = Patriot.Theme.Discord
-    discordBtn.MouseEnter:Connect(function()
-        TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.DiscordHover}):Play()
-    end)
-    discordBtn.MouseLeave:Connect(function()
-        TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Discord}):Play()
-    end)
+    discordIcon.ScaleType = Enum.ScaleType.Fit
+    discordIcon.Parent = discordBtn
+    discordBtn.MouseEnter:Connect(function() TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.DiscordHover}):Play() end)
+    discordBtn.MouseLeave:Connect(function() TweenService:Create(discordIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Discord}):Play() end)
+
+    local changelogBtn = Instance.new("TextButton")
+    changelogBtn.Size = UDim2.new(0, 36, 0, 36)
+    changelogBtn.Position = UDim2.new(0.5, 44, 0, bottomY)
+    changelogBtn.AnchorPoint = Vector2.new(0.5, 0)
+    changelogBtn.BackgroundColor3 = Patriot.Theme.Background
+    changelogBtn.BackgroundTransparency = 0.85
+    changelogBtn.BorderSizePixel = 0
+    changelogBtn.Text = ""
+    changelogBtn.AutoButtonColor = false
+    changelogBtn.Parent = mainFrame
+    Instance.new("UICorner", changelogBtn).CornerRadius = UDim.new(0, 8)
+
+    local changelogIcon = Instance.new("ImageLabel")
+    changelogIcon.Size = UDim2.new(0, 18, 0, 18)
+    changelogIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    changelogIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    changelogIcon.BackgroundTransparency = 1
+    changelogIcon.Image = getIcon("changelog")
+    changelogIcon.ImageColor3 = Patriot.Theme.TextDim
+    changelogIcon.ScaleType = Enum.ScaleType.Fit
+    changelogIcon.Parent = changelogBtn
+    changelogBtn.MouseEnter:Connect(function() TweenService:Create(changelogIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Text}):Play() end)
+    changelogBtn.MouseLeave:Connect(function() TweenService:Create(changelogIcon, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.TextDim}):Play() end)
 
     if #Patriot.Changelog == 0 then
         changelogBtn.Visible = false
@@ -2352,6 +2383,7 @@ local function BuildKeyUI()
         discordBtn.Position = UDim2.new(0.5, 22, 0, bottomY)
     end
 
+    -- Shop panel
     if showShop then
         local shopDivider = Instance.new("Frame")
         shopDivider.Size = UDim2.new(1, 0, 0, shopDividerHeight)
@@ -2367,23 +2399,19 @@ local function BuildKeyUI()
         shopFrame.Position = UDim2.new(0, 0, 1, -shopHeight)
         shopFrame.AnchorPoint = Vector2.new(0, 0)
         shopFrame.BackgroundColor3 = Patriot.Theme.Header
+        shopFrame.BackgroundTransparency = 0.85
         shopFrame.BorderSizePixel = 0
         shopFrame.ClipsDescendants = true
         shopFrame.Parent = mainFrame
 
-        local shopGradient = Instance.new("UIGradient", shopFrame)
-        shopGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Patriot.Theme.Header),
-            ColorSequenceKeypoint.new(1, Patriot.Theme.CardBackground)
-        })
-
         local shopCorner = Instance.new("UICorner", shopFrame)
-        shopCorner.CornerRadius = UDim.new(0, 6)
+        shopCorner.CornerRadius = UDim.new(0, 12)
 
         local shopTopFix = Instance.new("Frame")
         shopTopFix.Size = UDim2.new(1, 0, 0, 8)
         shopTopFix.Position = UDim2.new(0, 0, 0, 0)
         shopTopFix.BackgroundColor3 = Patriot.Theme.Header
+        shopTopFix.BackgroundTransparency = 0.85
         shopTopFix.BorderSizePixel = 0
         shopTopFix.Parent = shopFrame
 
@@ -2395,7 +2423,7 @@ local function BuildKeyUI()
         shopIconWrapper.Position = UDim2.new(0, shopPadding, 0.5, 0)
         shopIconWrapper.AnchorPoint = Vector2.new(0, 0.5)
         shopIconWrapper.BackgroundColor3 = Patriot.Theme.Accent
-        shopIconWrapper.BackgroundTransparency = 0.6
+        shopIconWrapper.BackgroundTransparency = 0.7
         shopIconWrapper.BorderSizePixel = 0
         shopIconWrapper.Parent = shopFrame
         Instance.new("UICorner", shopIconWrapper).CornerRadius = UDim.new(0, 6)
@@ -2403,7 +2431,7 @@ local function BuildKeyUI()
         local shopIconStroke = Instance.new("UIStroke", shopIconWrapper)
         shopIconStroke.Color = Patriot.Theme.Accent
         shopIconStroke.Thickness = 1
-        shopIconStroke.Transparency = 0.4
+        shopIconStroke.Transparency = 0.5
 
         local shopIconImg = Instance.new("ImageLabel")
         shopIconImg.Size = UDim2.new(0, shopIconSize, 0, shopIconSize)
@@ -2448,6 +2476,7 @@ local function BuildKeyUI()
         buyBtn.Position = UDim2.new(1, -shopPadding, 0.5, 0)
         buyBtn.AnchorPoint = Vector2.new(1, 0.5)
         buyBtn.BackgroundColor3 = Patriot.Theme.Accent
+        buyBtn.BackgroundTransparency = 0.2
         buyBtn.BorderSizePixel = 0
         buyBtn.Text = ""
         buyBtn.AutoButtonColor = false
@@ -2458,12 +2487,6 @@ local function BuildKeyUI()
         buyBtnStroke.Color = Patriot.Theme.AccentHover
         buyBtnStroke.Thickness = 1
         buyBtnStroke.Transparency = 0.4
-
-        local buyGradient = Instance.new("UIGradient", buyBtn)
-        buyGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Patriot.Theme.Accent),
-            ColorSequenceKeypoint.new(1, Patriot.Theme.AccentHover)
-        })
 
         local buyContent = Instance.new("Frame")
         buyContent.Size = UDim2.new(1, 0, 1, 0)
@@ -2496,14 +2519,8 @@ local function BuildKeyUI()
         buyLabel.LayoutOrder = 2
         buyLabel.Parent = buyContent
 
-        buyBtn.MouseEnter:Connect(function()
-            TweenService:Create(buyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.AccentHover}):Play()
-            TweenService:Create(buyBtnStroke, TweenInfo.new(0.2), {Transparency = 0.2}):Play()
-        end)
-        buyBtn.MouseLeave:Connect(function()
-            TweenService:Create(buyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Patriot.Theme.Accent}):Play()
-            TweenService:Create(buyBtnStroke, TweenInfo.new(0.2), {Transparency = 0.4}):Play()
-        end)
+        buyBtn.MouseEnter:Connect(function() TweenService:Create(buyBtn, TweenInfo.new(0.15), {BackgroundColor3 = Patriot.Theme.AccentHover, BackgroundTransparency = 0.1}):Play() end)
+        buyBtn.MouseLeave:Connect(function() TweenService:Create(buyBtn, TweenInfo.new(0.15), {BackgroundColor3 = Patriot.Theme.Accent, BackgroundTransparency = 0.2}):Play() end)
         buyBtn.MouseButton1Click:Connect(function()
             if Patriot.Shop.Link ~= "" then
                 pcall(function() setclipboard(Patriot.Shop.Link) end)
@@ -2539,13 +2556,12 @@ local function BuildKeyUI()
         elseif state == "error" then color, icon, text = Patriot.Theme.Error, getIcon("alert"), customText or "Invalid Key" end
         TweenService:Create(statusLabel, TweenInfo.new(0.3), {TextColor3 = color}):Play()
         TweenService:Create(statusIcon, TweenInfo.new(0.3), {ImageColor3 = color}):Play()
-        TweenService:Create(statusStroke, TweenInfo.new(0.3), {Color = color}):Play()
         statusLabel.Text = text statusIcon.Image = icon
     end
 
     local function closeDoorsThenExit(callback)
         ui.closeAllPanels(userIcon, changelogIcon, function()
-            doors.close(function() task.wait(0.35) if callback then callback() end end)
+            doors.close(function() task.wait(0.3) if callback then callback() end end)
         end)
     end
 
@@ -2553,9 +2569,9 @@ local function BuildKeyUI()
         Patriot:Notify("Goodbye", "Welcome to use it next time!", 2, "close")
         closeDoorsThenExit(function()
             fullCleanup()
-            TweenService:Create(container, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
-            TweenService:Create(mainFrame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-            task.wait(0.5) screenGui:Destroy()
+            TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
+            TweenService:Create(mainFrame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+            task.wait(0.4) screenGui:Destroy()
             if Patriot.Callbacks.OnClose then Patriot.Callbacks.OnClose() end
         end)
     end)
@@ -2589,9 +2605,9 @@ local function BuildKeyUI()
             setStatus("success") Patriot:Notify("Success", "Key validated successfully!", 2, "success") task.wait(1)
             closeDoorsThenExit(function()
                 disableBlur()
-                TweenService:Create(container, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
-                TweenService:Create(mainFrame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-                task.wait(0.5) screenGui:Destroy()
+                TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
+                TweenService:Create(mainFrame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+                task.wait(0.4) screenGui:Destroy()
                 if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
             end)
         else
@@ -2611,15 +2627,16 @@ local function BuildKeyUI()
     textBox.FocusLost:Connect(function(enter) if enter then handleRedeem() end end)
 
     setupDragging(header, container)
-    TweenService:Create(container, TweenInfo.new(0.6, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, 0.45, 0)}):Play()
-    task.wait(0.7)
+    TweenService:Create(container, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, 0.45, 0)}):Play()
+    task.wait(0.6)
     doors.open(function()
-        task.wait(0.25)
+        task.wait(0.2)
         ui.toggleUser(userIcon)
-        if #Patriot.Changelog > 0 then task.wait(0.35) ui.toggleCL(changelogIcon) end
+        if #Patriot.Changelog > 0 then task.wait(0.3) ui.toggleCL(changelogIcon) end
     end)
 end
 
+-- Public API functions (unchanged)
 function Patriot:Launch()
     Internal.IsJunkieMode = false
     Internal.IsWilkinsMode = false
@@ -2720,7 +2737,6 @@ function Patriot:LaunchWilkins(config)
     end
     getgenv().PatriotClosed = false
     EnsureIconsReady(function()
-       
         local wsCtor = (WebSocket and WebSocket.connect)
             or (syn and syn.websocket and syn.websocket.connect)
             or (websocket and websocket.connect)
@@ -2730,7 +2746,6 @@ function Patriot:LaunchWilkins(config)
             return
         end
 
- 
         local libCode
         do
             local ws = wsCtor("wss://secure.pandauth.com/ws?type=wilkins-lib")
@@ -2747,14 +2762,12 @@ function Patriot:LaunchWilkins(config)
             return
         end
 
-      
         local Wilkins = loadstring(libCode)()
         if not Wilkins or type(Wilkins.configure) ~= "function" then
             Patriot:Notify("Error", "Wilkins library failed to initialize", 5, "error")
             return
         end
 
-     
         local wilkinsConfig = {
             serviceId = config.serviceId,
             debug = config.debug or false,
@@ -2771,7 +2784,6 @@ function Patriot:LaunchWilkins(config)
         Wilkins.configure(wilkinsConfig)
         Internal.Wilkins = Wilkins
 
-        
         Internal.ValidateFunction = function(key)
             local result = Wilkins.validate(key)
             if result and result.success then
@@ -2781,7 +2793,6 @@ function Patriot:LaunchWilkins(config)
             end
         end
 
-        
         if Patriot.Links.GetKey == "" then
             pcall(function()
                 local info = Wilkins.copyGetKeyUrl()
@@ -2791,13 +2802,11 @@ function Patriot:LaunchWilkins(config)
             end)
         end
 
-    
         if Patriot.Options.Keyless == nil then
             local keylessResult = Wilkins.validate("KEYLESS")
             if keylessResult and keylessResult.success then
                 if Patriot.Options.KeylessUI == false then
                     handleKeylessSkip()
-              
                     task.spawn(function()
                         while Wilkins.isConnected() do task.wait(5) end
                     end)
@@ -2805,7 +2814,6 @@ function Patriot:LaunchWilkins(config)
                 end
                 BuildKeylessUI()
                 while not getgenv().SCRIPT_KEY do task.wait(0.1) end
-              
                 task.spawn(function()
                     while Wilkins.isConnected() do task.wait(5) end
                 end)
@@ -2827,7 +2835,6 @@ function Patriot:LaunchWilkins(config)
             return
         end
 
-       
         if Patriot.Storage.AutoLoad then
             local savedKey = Wilkins.loadSavedKey() or loadKey()
             if savedKey and savedKey ~= "" then
@@ -2851,11 +2858,9 @@ function Patriot:LaunchWilkins(config)
             end
         end
 
-   
         BuildKeyUI()
         while not getgenv().SCRIPT_KEY do task.wait(0.1) end
         
-       
         task.spawn(function()
             while Internal.Wilkins and Internal.Wilkins.isConnected() do
                 task.wait(5)
