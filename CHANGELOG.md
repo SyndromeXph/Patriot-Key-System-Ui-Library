@@ -1,3 +1,10 @@
+## 06.30.2026
+
+```diff
+[Optimize]
+Optimize Luarmor Api invoke，Optimize some code
+```
+
 ## 06.03.2026
 
 ```diff

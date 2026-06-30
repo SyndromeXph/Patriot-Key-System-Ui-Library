@@ -1,92 +1,83 @@
 local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi.luau"))()  
 
-
--- getgenv().Patriot = getgenv().Patriot or {}
--- getgenv().Patriot.LuarmorScriptId = "YOUR_SCRIPT_ID_HERE"                                                                              
--- local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/expert-octo-doodle/refs/heads/main/PatriotUi-luarmor.luau"))()
--- Use this version only when you need to use luarmor
--- 仅在需要使用luarmor时使用此版本。
-
--- local LuarmorAPI = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
--- Patriot.Callbacks.OnVerify = function(key)
---    local status = LuarmorAPI.check_key(key)
---    if status.code == "KEY_VALID" then
---       return { valid = true }
---   else
---       local errorMsg = status.message
---        if status.code == "KEY_HWID_LOCKED" then
---           errorMsg = "Key is locked to a different HWID. Please reset it."
---      elseif status.code == "KEY_INCORRECT" then
---         errorMsg = "Key is invalid or does not exist."
---        elseif status.code == "KEY_EXPIRED" then
---          errorMsg = "Key has expired."
---      end
---        return { valid = false, message = errorMsg }
--- end
--- end
+-- Luarmor 卢阿莫
+--[[
+Patriot:LaunchLuarmor({
+    scriptId = "YOUR_SCRIPT_ID_HERE"  -- Your Luarmor Script id｜你的卢阿莫脚本id
+})
+]]
 -- luarmor system invoke｜卢阿莫系统调用
 
 
 
--- Panda Auth ｜熊猫
--- Patriot:LaunchWilkins({
---    serviceId = "your-service-id",
---    debug = false,
---    kickOnDetect = false,
---    openDashboard = true,
---    validationTimeout = 600,
---    onTamper = function(flags) warn("Tamper detected:", table.concat(flags, ",")) end,
---    onSessionEnd = function(reason, msg) warn("Session ended:", reason, msg) end,
--- })
+-- Panda Auth ｜熊猫 Auth
+--[[
+ Patriot:LaunchWilkins({
+    serviceId = "your-service-id",
+    debug = false,
+    kickOnDetect = false,
+    openDashboard = true,
+    validationTimeout = 600,
+    onTamper = function(flags) warn("Tamper detected:", table.concat(flags, ",")) end,
+    onSessionEnd = function(reason, msg) warn("Session ended:", reason, msg) end,
+ })
+]]
 -- Panda Auth Key System SDK integration｜熊猫密钥系统sdk集成
+
+
 
 -- LaunchJunkie(config)｜Junkie SDK integration with automatic validation
 -- LaunchJunkie(config) Junkie SDK集成，具备自动验证功能。
--- Patriot:LaunchJunkie({
---    Service = "YOUR_SERVICE_NAME",
---    Identifier = "YOUR_IDENTIFIER",
---    Provider = "YOUR_PROVIDER_NAME"
---})
+--[[
+ Patriot:LaunchJunkie({
+    Service = "YOUR_SERVICE_NAME",
+    Identifier = "YOUR_IDENTIFIER",
+    Provider = "YOUR_PROVIDER_NAME"
+})
+]]
 -- Keys are automatically validated through Junkie
 -- 密钥通过Junkie自动验证
 
 
 
--- local HttpService = game:GetService("HttpService")
--- Patriot.Callbacks.OnVerify = function(key)
---    local success, response = pcall(function()
---        return game:HttpGet("https://api.yoursite.com/validate?key=" .. key)
---    end)    
---    if success then
---        local data = HttpService:JSONDecode(response)
---        return {
---            valid = data.valid,
---            error = data.error or "UNKNOWN",
---            message = data.message or "Invalid key"
---        }
---    end  
---    return false
--- end
+--[[
+ local HttpService = game:GetService("HttpService")
+ Patriot.Callbacks.OnVerify = function(key)
+    local success, response = pcall(function()
+        return game:HttpGet("https://api.yoursite.com/validate?key=" .. key)
+    end)    
+    if success then
+        local data = HttpService:JSONDecode(response)
+        return {
+            valid = data.valid,
+            error = data.error or "UNKNOWN",
+            message = data.message or "Invalid key"
+        }
+    end  
+   return false
+ end
+]]
 -- HTTP API Validation | Validate keys through your own API endpoint
 -- HTTP API验证 | 通过您自己的API端点验证密钥。
 
 
 Patriot.Callbacks.OnVerify = function(key)
-    return key == "1"----Set key｜设置密钥
+    return key == "THIS_IS_KEY"----Set key｜设置密钥
 end
 -- ↑↑↑↑↑Simple Validation｜简单验证
 -- OnVerify｜Called when a key is submitted for validation. Return true for valid keys, or a detailed response object.
 -- 当提交密钥进行验证时，会调用OnVerify。对于有效密钥，返回true，否则返回一个详细的响应对象。
 
 -- ↓↓↓↓↓Detailed Response｜详细答复
--- Patriot.Callbacks.OnVerify = function(key)
---    return {
---        valid = false,
---        error = "KEY_EXPIRED",
---        message = "Your key has expired"
---    }
--- end
-
+--[[
+ Patriot.Callbacks.OnVerify = function(key)
+    return {
+        valid = false,
+        error = "KEY_EXPIRED",
+        message = "Your key has expired"
+    }
+ end
+]]
 
 
 -- Appearance｜外观
@@ -167,36 +158,40 @@ Patriot.Theme = {
 
 
 -- Notification System｜通知系统弹窗
--- Patriot:Notify(title, message, duration, iconType)
--- Icon Types: "info", "success", "error", "warning", "shield", "key", "copy", "discord", "close"
--- Patriot:Notify("Success", "Key validated!", 2, "success")
--- Patriot:Notify("Error", "Invalid key", 4, "error")
+--[[
+ Patriot:Notify(title, message, duration, iconType)
+ Icon Types: "info", "success", "error", "warning", "shield", "key", "copy", "discord", "close"
+ Patriot:Notify("Success", "Key validated!", 2, "success")
+ Patriot:Notify("Error", "Invalid key", 4, "error")
+]]
 
 
--- local KEYS = {
---    ["BASIC_KEY"] = "basic",
---    ["PREMIUM_KEY"] = "premium"
--- }
+--[[
+ local KEYS = {
+    ["BASIC_KEY"] = "basic",
+    ["PREMIUM_KEY"] = "premium"
+ }
 
--- Patriot.Callbacks.OnVerify = function(key)
---    local tier = KEYS[key]
---    if tier then
---        getgenv().USER_TIER = tier
---        return true
---    end
---    return false
--- end
--- Patriot.Callbacks.OnSuccess = function()
---    if getgenv().USER_TIER == "premium" then
--- ↓↓↓↓↓PREMIUM Source code placement↓↓↓↓↓
---        loadstring(game:HttpGet("PREMIUM_URL"))()
--- ↑↑↑↑↑↑高级版源码放置↑↑↑↑↑↑↑
---    else
--- ↓↓↓↓↓BASIC Source code placement↓↓↓↓↓
---        loadstring(game:HttpGet("BASIC_URL"))()
---↑↑↑↑↑↑基本版源码放置↑↑↑↑↑↑↑
---    end
--- end
+ Patriot.Callbacks.OnVerify = function(key)
+    local tier = KEYS[key]
+    if tier then
+        getgenv().USER_TIER = tier
+        return true
+    end
+    return false
+ end
+ Patriot.Callbacks.OnSuccess = function()
+    if getgenv().USER_TIER == "premium" then
+ ↓↓↓↓↓PREMIUM Source code placement↓↓↓↓↓
+        loadstring(game:HttpGet("PREMIUM_URL"))()
+ ↑↑↑↑↑↑高级版源码放置↑↑↑↑↑↑↑
+    else
+ ↓↓↓↓↓BASIC Source code placement↓↓↓↓↓
+        loadstring(game:HttpGet("BASIC_URL"))()
+↑↑↑↑↑↑基本版源码放置↑↑↑↑↑↑↑
+    end
+ end
+]]
 -- Multiple Key Tiers｜Implement a tiered key system where different keys unlock different features.
 --多级密钥系统 实施一种分级密钥系统，其中不同的密钥可解锁不同的功能。
 
@@ -228,19 +223,20 @@ end
 -- OnClose 在用户未验证就关闭用户界面时调用。
 
 
-
--- local HttpService = game:GetService("HttpService")
--- Patriot.Callbacks.OnSuccess = function()
---    pcall(function()
---        HttpService:PostAsync("WEBHOOK_URL", HttpService:JSONEncode({
---            embeds = {{
---                title = "Login",
---                description = "User: " .. game.Players.LocalPlayer.Name,
---                color = 3066993
---            }}
---        }))
---    end)
--- end
+--[[
+ local HttpService = game:GetService("HttpService")
+ Patriot.Callbacks.OnSuccess = function()
+    pcall(function()
+        HttpService:PostAsync("WEBHOOK_URL", HttpService:JSONEncode({
+            embeds = {{
+                title = "Login",
+                description = "User: " .. game.Players.LocalPlayer.Name,
+                color = 3066993
+            }}
+        }))
+    end)
+ end
+]]
 -- Webhook Logging｜Log successful key validations to a Discord webhook
 -- Webhook日志记录 将成功的密钥验证记录到Discord Webhook中。
 
@@ -259,13 +255,14 @@ Patriot.Changelog = {
 }
 
 
-
--- Patriot.Shop.Enabled = true
--- Patriot.Shop.Icon = "rbxassetid://123456789"
--- Patriot.Shop.Title = "Premium Upgrade"
--- Patriot.Shop.Subtitle = "Unlock all features"
--- Patriot.Shop.ButtonText = "Get Now"
--- Patriot.Shop.Link = "https://shop.example.com"
+--[[
+ Patriot.Shop.Enabled = true
+ Patriot.Shop.Icon = "rbxassetid://123456789"
+ Patriot.Shop.Title = "Premium Upgrade"
+ Patriot.Shop.Subtitle = "Unlock all features"
+ Patriot.Shop.ButtonText = "Get Now"
+ Patriot.Shop.Link = "https://shop.example.com"
+]]
 -- Shop with Custom Icon｜Configure the shop section with a custom icon and branding
 -- 使用自定义图标购物 使用自定义图标和品牌配置商店部分。
 
@@ -280,8 +277,10 @@ Patriot.Shop = {
     ButtonText = "Buy",
     Link = ""
 }
--- Patriot.Shop.Enabled = true
--- Patriot.Shop.Link = "https://yourshop.com/buy"
+--[[
+ Patriot.Shop.Enabled = true
+ Patriot.Shop.Link = "https://yourshop.com/buy"
+ ]]
 -- Minimal Shop Setup｜The simplest way to add a shop link to your UI
 -- 极简店铺设置 将店铺链接添加到用户界面的最简单方法。
 

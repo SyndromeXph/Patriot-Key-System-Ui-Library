@@ -110,11 +110,13 @@ Patriot.Shop = {
 local Internal = {
     Junkie = nil,
     Wilkins = nil,
+    Luarmor = nil,
     BlurEffect = nil,
     NotificationList = {},
     ValidateFunction = nil,
     IsJunkieMode = false,
     IsWilkinsMode = false,
+    IsLuarmorMode = false,
     IconsLoaded = false
 }
 
@@ -727,8 +729,7 @@ local function ShowLoadingScreen(onComplete)
         local iconNames = {"key", "shield", "check", "copy", "discord", "alert", "lock", "loading", "close", "changelog", "user", "clock", "cart"}
         if shouldDownloadLogo() then table.insert(iconNames, "logo") end
         for _, name in ipairs(iconNames) do downloadIcon(name) task.wait(0.06) end
-        Internal.IconsLoaded = true
-        setPhase(4) task.wait(0.25)
+        Internal.IconsLoaded = true        setPhase(4) task.wait(0.25)
         setPhase(5) task.wait(0.5)
         animationRunning = false
         if pulseThread then task.cancel(pulseThread) end
@@ -1801,7 +1802,7 @@ local function BuildKeylessUI()
             TweenService:Create(main, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
             TweenService:Create(mainStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
             task.wait(0.4) gui:Destroy()
-            if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+            if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and not Internal.IsLuarmorMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
         end)
     end)
 
@@ -2136,7 +2137,7 @@ local function BuildKeyUI()
         discordBtn.Position = UDim2.new(0.5, 22, 0, bottomY)
     end
 
-    -- shop panel anchored to bottom of mainFrame with correct sizing
+    -- shop panel
     if showShop then
         local shopDivider = Instance.new("Frame")
         shopDivider.Size = UDim2.new(1, 0, 0, shopDividerHeight)
@@ -2156,7 +2157,6 @@ local function BuildKeyUI()
         shopFrame.ClipsDescendants = true
         shopFrame.Parent = mainFrame
 
-        -- bottom corner fix so rounded corners only show on bottom
         local shopCorner = Instance.new("UICorner", shopFrame)
         shopCorner.CornerRadius = UDim.new(0, 4)
 
@@ -2342,10 +2342,14 @@ local function BuildKeyUI()
                         HWID_BANNED = "Hardware banned", KEY_INVALIDATED = "Key was revoked",
                         ALREADY_USED = "One-time key already used", HWID_MISMATCH = "HWID limit reached",
                         SERVICE_NOT_FOUND = "Service not found", SERVICE_MISMATCH = "Wrong service",
-                        PREMIUM_REQUIRED = "Premium required", ERROR = "Network error"
+                        PREMIUM_REQUIRED = "Premium required", ERROR = "Network error",
+                        KEY_INCORRECT = "Key is wrong or deleted", KEY_HWID_LOCKED = "Key linked to different HWID",
+                        KEY_BLACKLISTED = "Key is blacklisted", KEY_EMPTY = "Key is empty",
+                        KEY_TOO_SHORT = "Key is too short", SCRIPT_NOT_FOUND = "Script not found",
+                        SCRIPT_DISABLED = "Script is disabled", RATE_LIMITED = "Rate limited"
                     }
                     local errCode = result.error or "Unknown"
-                    errorMsg = errMsgs[errCode] or result.message or errCode
+                    errorMsg = result.message or errMsgs[errCode] or errCode
                     if errCode == "HWID_BANNED" then task.delay(2, function() cloneref(Players.LocalPlayer):Kick("Hardware banned") end) end
                 elseif type(result) == "boolean" then valid = result errorMsg = msg or "Invalid key" end
             end
@@ -2359,7 +2363,7 @@ local function BuildKeyUI()
                 TweenService:Create(container, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = UDim2.new(0.5, 0, -0.5, 0)}):Play()
                 TweenService:Create(mainFrame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
                 task.wait(0.4) screenGui:Destroy()
-                if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+                if not Internal.IsJunkieMode and not Internal.IsWilkinsMode and not Internal.IsLuarmorMode and Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
             end)
         else
             setStatus("error", errorMsg) Patriot:Notify("Invalid", errorMsg, 4, "error")
@@ -2390,6 +2394,7 @@ end
 function Patriot:Launch()
     Internal.IsJunkieMode = false
     Internal.IsWilkinsMode = false
+    Internal.IsLuarmorMode = false
     Internal.ValidateFunction = Patriot.Callbacks.OnVerify
     local existingKey = getgenv().SCRIPT_KEY
     if existingKey and existingKey ~= "" then
@@ -2430,6 +2435,7 @@ function Patriot:LaunchJunkie(config)
     assert(config and config.Service and config.Identifier and config.Provider, "Config required: Service, Identifier, Provider")
     Internal.IsJunkieMode = true
     Internal.IsWilkinsMode = false
+    Internal.IsLuarmorMode = false
     local existingKey = getgenv().SCRIPT_KEY
     if existingKey and existingKey ~= "" then
         Patriot:Notify("Executed", "Script loaded successfully!", 2, "success")
@@ -2480,6 +2486,7 @@ function Patriot:LaunchWilkins(config)
     assert(config and config.serviceId, "Config required: serviceId")
     Internal.IsJunkieMode = false
     Internal.IsWilkinsMode = true
+    Internal.IsLuarmorMode = false
     local existingKey = getgenv().SCRIPT_KEY
     if existingKey and existingKey ~= "" then
         Patriot:Notify("Executed", "Script loaded successfully!", 2, "success")
@@ -2487,7 +2494,6 @@ function Patriot:LaunchWilkins(config)
     end
     getgenv().PatriotClosed = false
     EnsureIconsReady(function()
-       
         local wsCtor = (WebSocket and WebSocket.connect)
             or (syn and syn.websocket and syn.websocket.connect)
             or (websocket and websocket.connect)
@@ -2497,7 +2503,6 @@ function Patriot:LaunchWilkins(config)
             return
         end
 
- 
         local libCode
         do
             local ws = wsCtor("wss://secure.pandauth.com/ws?type=wilkins-lib")
@@ -2514,14 +2519,12 @@ function Patriot:LaunchWilkins(config)
             return
         end
 
-      
         local Wilkins = loadstring(libCode)()
         if not Wilkins or type(Wilkins.configure) ~= "function" then
             Patriot:Notify("Error", "Wilkins library failed to initialize", 5, "error")
             return
         end
 
-     
         local wilkinsConfig = {
             serviceId = config.serviceId,
             debug = config.debug or false,
@@ -2538,7 +2541,6 @@ function Patriot:LaunchWilkins(config)
         Wilkins.configure(wilkinsConfig)
         Internal.Wilkins = Wilkins
 
-        
         Internal.ValidateFunction = function(key)
             local result = Wilkins.validate(key)
             if result and result.success then
@@ -2548,7 +2550,6 @@ function Patriot:LaunchWilkins(config)
             end
         end
 
-        
         if Patriot.Links.GetKey == "" then
             pcall(function()
                 local info = Wilkins.copyGetKeyUrl()
@@ -2558,13 +2559,11 @@ function Patriot:LaunchWilkins(config)
             end)
         end
 
-    
         if Patriot.Options.Keyless == nil then
             local keylessResult = Wilkins.validate("KEYLESS")
             if keylessResult and keylessResult.success then
                 if Patriot.Options.KeylessUI == false then
                     handleKeylessSkip()
-              
                     task.spawn(function()
                         while Wilkins.isConnected() do task.wait(5) end
                     end)
@@ -2572,7 +2571,6 @@ function Patriot:LaunchWilkins(config)
                 end
                 BuildKeylessUI()
                 while not getgenv().SCRIPT_KEY do task.wait(0.1) end
-              
                 task.spawn(function()
                     while Wilkins.isConnected() do task.wait(5) end
                 end)
@@ -2594,7 +2592,6 @@ function Patriot:LaunchWilkins(config)
             return
         end
 
-       
         if Patriot.Storage.AutoLoad then
             local savedKey = Wilkins.loadSavedKey() or loadKey()
             if savedKey and savedKey ~= "" then
@@ -2618,16 +2615,121 @@ function Patriot:LaunchWilkins(config)
             end
         end
 
-   
         BuildKeyUI()
         while not getgenv().SCRIPT_KEY do task.wait(0.1) end
         
-       
         task.spawn(function()
             while Internal.Wilkins and Internal.Wilkins.isConnected() do
                 task.wait(5)
             end
         end)
+    end)
+end
+
+function Patriot:LaunchLuarmor(config)
+    assert(config and config.scriptId, "Config required: scriptId")
+    Internal.IsJunkieMode = false
+    Internal.IsWilkinsMode = false
+    Internal.IsLuarmorMode = true
+    local existingKey = getgenv().SCRIPT_KEY
+    if existingKey and existingKey ~= "" then
+        Patriot:Notify("Executed", "Script loaded successfully!", 2, "success")
+        if Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+        return
+    end
+    getgenv().PatriotClosed = false
+    EnsureIconsReady(function()
+       
+        local success, api = pcall(function()
+            return loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
+        end)
+        if not success or not api then
+            Patriot:Notify("Error", "Failed to load Luarmor SDK", 5, "error")
+            return
+        end
+        
+        api.script_id = config.scriptId
+        Internal.Luarmor = api
+
+     
+        if Patriot.Links.GetKey == "" then
+            pcall(function()
+                local info = api.copy_get_key_url and api.copy_get_key_url()
+                if info and info.url then
+                    Patriot.Links.GetKey = info.url
+                end
+            end)
+        end
+
+     
+        Internal.ValidateFunction = function(key)
+            local status = api.check_key(key)
+            if status and status.code == "KEY_VALID" then
+                return {valid = true}
+            else
+                local errorMap = {
+                    KEY_INCORRECT = "Key is wrong or deleted",
+                    KEY_HWID_LOCKED = "Key linked to different HWID",
+                    KEY_EXPIRED = "Key has expired",
+                    KEY_BLACKLISTED = "Key is blacklisted",
+                    KEY_EMPTY = "Key is empty",
+                    KEY_TOO_SHORT = "Key is too short",
+                    SCRIPT_NOT_FOUND = "Script not found",
+                    SCRIPT_DISABLED = "Script is disabled",
+                    RATE_LIMITED = "Rate limited, try again later",
+                    ERROR = "Unknown error"
+                }
+                local errCode = status and status.code or "ERROR"
+                local errMsg = errorMap[errCode] or (status and status.message) or "Unknown error"
+                return {valid = false, error = errCode, message = errMsg}
+            end
+        end
+
+        
+        if Patriot.Options.Keyless == nil then
+            local keylessStatus = api.check_key("KEYLESS")
+            if keylessStatus and keylessStatus.code == "KEY_VALID" then
+                if Patriot.Options.KeylessUI == false then
+                    handleKeylessSkip()
+                    return
+                end
+                BuildKeylessUI()
+                while not getgenv().SCRIPT_KEY do task.wait(0.1) end
+                return
+            end
+        elseif Patriot.Options.Keyless == true then
+            if Patriot.Options.KeylessUI == false then
+                handleKeylessSkip()
+                return
+            end
+            BuildKeylessUI()
+            while not getgenv().SCRIPT_KEY do task.wait(0.1) end
+            return
+        end
+
+     
+        if Patriot.Storage.AutoLoad then
+            local savedKey = loadKey()
+            if savedKey and savedKey ~= "" then
+                Patriot:Notify("Checking", "Validating saved key...", 2, "shield")
+                task.wait(0.5)
+                local status = api.check_key(savedKey)
+                if status and status.code == "KEY_VALID" then
+                    getgenv().SCRIPT_KEY = savedKey
+                    Patriot:Notify("Welcome Back", "Key validated!", 2, "success")
+                    if Patriot.Callbacks.OnSuccess then Patriot.Callbacks.OnSuccess() end
+                    return
+                else
+                    clearKey()
+                    Patriot:Notify("Expired", "Saved key is no longer valid", 3, "warning")
+                    task.wait(1)
+                end
+            end
+        end
+
+      
+        BuildKeyUI()
+        while not getgenv().SCRIPT_KEY do task.wait(0.1) end
     end)
 end
 
