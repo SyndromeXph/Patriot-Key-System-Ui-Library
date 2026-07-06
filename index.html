@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Patriot Key System · Complete Documentation</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SyndromeXph/icon-2/refs/heads/main/Image_1780061789213_497.png">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -133,9 +134,11 @@
             letter-spacing: -0.5px;
         }
 
-        .nav-brand i {
-            color: var(--accent);
-            font-size: 1.6rem;
+        .nav-brand img {
+            height: 32px;
+            width: 32px;
+            object-fit: contain;
+            border-radius: 6px;
         }
 
         .nav-links {
@@ -205,6 +208,7 @@
         .section:nth-child(3) { animation-delay: 0.3s; }
         .section:nth-child(4) { animation-delay: 0.4s; }
         .section:nth-child(5) { animation-delay: 0.5s; }
+        .section:nth-child(6) { animation-delay: 0.6s; }
 
         @keyframes sectionFadeUp {
             to { opacity: 1; transform: translateY(0); }
@@ -622,9 +626,13 @@
             font-weight: 600;
             color: var(--text-secondary);
         }
-        .footer .brand i {
-            color: var(--accent);
+        .footer .brand img {
+            height: 24px;
+            width: 24px;
+            object-fit: contain;
+            vertical-align: middle;
             margin-right: 6px;
+            border-radius: 4px;
         }
 
         .footer-links {
@@ -681,7 +689,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <i class="fas fa-key"></i>
+                <img src="https://raw.githubusercontent.com/SyndromeXph/icon-2/refs/heads/main/Image_1780061789213_497.png" alt="Patriot Icon">
                 <span>Patriot Key</span>
             </div>
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
@@ -723,12 +731,36 @@
             <h2 class="section-title" data-i18n="features.title">Core Features</h2>
             <p class="section-sub" data-i18n="features.sub">Designed for executor scenarios, balancing flexibility and ease of use.</p>
             <div class="card-grid">
-                <div class="card"><div class="icon"><i class="fas fa-plug"></i></div><h3 data-i18n="features.f1.title">Multi-SDK Integration</h3><p data-i18n="features.f1.desc">Native support for Junkie, Panda Auth, Luarmor, and custom HTTP backends.</p></div>
-                <div class="card"><div class="icon"><i class="fas fa-database"></i></div><h3 data-i18n="features.f2.title">Persistent Storage</h3><p data-i18n="features.f2.desc">Keys are saved locally and auto-validated on subsequent launches.</p></div>
-                <div class="card"><div class="icon"><i class="fas fa-toggle-on"></i></div><h3 data-i18n="features.f3.title">Keyless Mode</h3><p data-i18n="features.f3.desc">Skip the key system entirely with configurable keyless mode options.</p></div>
-                <div class="card"><div class="icon"><i class="fas fa-paint-brush"></i></div><h3 data-i18n="features.f4.title">Modern UI Design</h3><p data-i18n="features.f4.desc">Adapts to Roblox executor visual style with smooth animations.</p></div>
-                <div class="card"><div class="icon"><i class="fas fa-shield-alt"></i></div><h3 data-i18n="features.f5.title">Custom Validation</h3><p data-i18n="features.f5.desc">Define your own key validation logic with full control.</p></div>
-                <div class="card"><div class="icon"><i class="fas fa-sync-alt"></i></div><h3 data-i18n="features.f6.title">Auto Update Check</h3><p data-i18n="features.f6.desc">Built-in update mechanism to stay compatible with latest SDKs.</p></div>
+                <div class="card">
+                    <div class="icon"><i class="fas fa-plug"></i></div>
+                    <h3 data-i18n="features.f1.title">Multi-SDK Integration</h3>
+                    <p data-i18n="features.f1.desc">Native support for Junkie, Panda Auth, Luarmor, and custom HTTP backends. Switch between services with minimal code changes.</p>
+                </div>
+                <div class="card">
+                    <div class="icon"><i class="fas fa-database"></i></div>
+                    <h3 data-i18n="features.f2.title">Persistent Storage</h3>
+                    <p data-i18n="features.f2.desc">Keys are saved locally and auto-validated on subsequent launches. No need to re-enter keys every session.</p>
+                </div>
+                <div class="card">
+                    <div class="icon"><i class="fas fa-toggle-on"></i></div>
+                    <h3 data-i18n="features.f3.title">Keyless Mode</h3>
+                    <p data-i18n="features.f3.desc">Skip the key system entirely with configurable keyless mode options. Perfect for free scripts and testing.</p>
+                </div>
+                <div class="card">
+                    <div class="icon"><i class="fas fa-paint-brush"></i></div>
+                    <h3 data-i18n="features.f4.title">Modern UI Design</h3>
+                    <p data-i18n="features.f4.desc">Adapts to Roblox executor visual style with smooth animations. Fully customizable appearance and theme.</p>
+                </div>
+                <div class="card">
+                    <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3 data-i18n="features.f5.title">Custom Validation</h3>
+                    <p data-i18n="features.f5.desc">Define your own key validation logic with full control. Support for simple string matching to complex API calls.</p>
+                </div>
+                <div class="card">
+                    <div class="icon"><i class="fas fa-sync-alt"></i></div>
+                    <h3 data-i18n="features.f6.title">Auto Update Check</h3>
+                    <p data-i18n="features.f6.desc">Built-in update mechanism to stay compatible with latest SDKs. Changelog display for version history.</p>
+                </div>
             </div>
         </section>
 
@@ -737,14 +769,14 @@
             <h2 class="section-title" data-i18n="sdk.title">Multi-SDK Support</h2>
             <p class="section-sub" data-i18n="sdk.sub">Patriot Key System abstracts the verification layer, allowing seamless switching between different backend services.</p>
             <div class="card-grid">
-                <!-- Junkie -->
+                <!-- Luarmor -->
                 <div class="card sdk-card">
                     <div class="icon">
-                        <img src="https://jnkie.com/favicon.ico" alt="Junkie SDK" style="width: 28px; height: 28px; display: block;">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAMAAAAocOYLAAAAXVBMVEVHcEy9rWPMvFvNvlbHuFfPv1jKu2XPwFLKulfLu1XMvVfNvVbUxUbMvFW3plnOvlXVyYq1pFe8q1a6qViyoFe2pFnEtFizol2wnlezoVizolnGtldfSh6zoVq1o12UyztSAAAAH3RSTlMAFiSoWDYKinTIQf//3YzsA///8OfI7kL/oE///3AvsA3vpAAAAUlJREFUeAFioCIAFCpHSXKCAABEG0RUUQUUZWT1/seMYlVmslmT/n0tZEEhVakfXFd13VRt8eTU5qxTPNWWQspnpjJG9abhz8pBcSeMGY0xllxdlQCD835C1YA8cQQ0laI7q0A4N3sfsCzZTYE2WJquG7tOs0anJ+/9oNDZDRpVma7rZde1p0cxO3/GYutSlLUeMWfZS24P4XLdLGZs7OVFYz79tV0uk/9KRlzeFp8eX8p5pu9u3r45xyR8+jJJPzo+xZTof7t5e3QM28unVKnqR49oh/cLCdKPzh4INApS+tsDMAQ910D/3YctHhCPza3rBO3p6dPXfQfmWXBMAaiV+vSZXNgAdbmF5e1BZ7bxNTMHR040Mt1uuTpCjKvFbm4KMu86pcsDOS3DIK9vD1KT67Mf3O1i24B9PXbu1tO3nefqkn9m+V+/AJ8hHv0Fwku3AAAAAElFTkSuQmCC" alt="Luarmor API" style="width: 28px; height: 28px; display: block;">
                     </div>
-                    <h3>Junkie SDK</h3>
-                    <p data-i18n="sdk.junkie.desc">Official Junkie service integration for stable key verification.</p>
-                    <span class="tag" data-i18n="sdk.junkie.tag">Recommended</span>
+                    <h3>Luarmor API</h3>
+                    <p data-i18n="sdk.luarmor.desc">Luarmor security service integration with advanced encryption and license management.</p>
+                    <span class="tag" data-i18n="sdk.luarmor.tag">Secure</span>
                 </div>
                 <!-- Panda -->
                 <div class="card sdk-card">
@@ -752,23 +784,23 @@
                         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAllBMVEVHcEz////39/fp6en19fX6+vqJiYlZWVnOzs729vbv7+9oaGgmJiaVlZXq6upfX1+mpqb///8PDw8AAAB8fHzt7e39/f2Ojo40NDTv7+/Pz8+qqqpycnLExMSzs7O/v79GRkZubm5TU1OcnJzY2Nj09PQeHh6Dg4P+/v4bGxs8PDz19fXh4eHt7e3p6emwsLD6+vqsrKzHiNUBAAAAMXRSTlMAVDwLKLr//8SlG////5v/////////rP//19H//6na////////////df//av+Cg+zkubW+HQAAAShJREFUeAFk0UViwzAUAFGZmxi/J8ymMN7/co1Jhcz2iaV+Z5jqM8MwLKVsx/W+3mwPjKGlbeAHQRiFcSIpo/Fkymw017igbinyRlj5wFrjBoKt1O2oy3KK31huqxorYH/A/4XHPZKQ1JjiezGxN+nNcsmlhKAcl7vViZiziN1hBIWM8XFF6iUzEOmPW0BZpTArwqIAdjlbEasxM4fmJCMZQXrinDMVuTR4AU+k3F2lvOYwi33qTaMGb5BIH12VtOe9k/m9JT16U6dd9ioZRYvTzlb77gFNEVlBXD9gro2japJWScPypM23W3Ra1WUn4KHabNHaz+Ns6M/+rVltLJTuqbWzl6U+VNtQiz6UZHGz30LP6zKbyQfwH4b6bHgZOM76aKvv0RwAAP1dJ18vAJOEAAAAAElFTkSuQmCC" alt="Panda Auth" style="width: 28px; height: 28px; display: block;">
                     </div>
                     <h3>Panda Auth</h3>
-                    <p data-i18n="sdk.panda.desc">Lightweight Panda Auth support for small projects and rapid deployment.</p>
+                    <p data-i18n="sdk.panda.desc">Lightweight Panda Auth support for small projects and rapid deployment with minimal setup.</p>
                     <span class="tag" data-i18n="sdk.panda.tag">Lightweight</span>
                 </div>
-                <!-- Luarmor -->
+                <!-- Junkie -->
                 <div class="card sdk-card">
                     <div class="icon">
-                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAMAAAAocOYLAAAAXVBMVEVHcEy9rWPMvFvNvlbHuFfPv1jKu2XPwFLKulfLu1XMvVfNvVbUxUbMvFW3plnOvlXVyYq1pFe8q1a6qViyoFe2pFnEtFizol2wnlezoVizolnGtldfSh6zoVq1o12UyztSAAAAH3RSTlMAFiSoWDYKinTIQf//3YzsA///8OfI7kL/oE///3AvsA3vpAAAAUlJREFUeAFioCIAFCpHSXKCAABEG0RUUQUUZWT1/seMYlVmslmT/n0tZEEhVakfXFd13VRt8eTU5qxTPNWWQspnpjJG9abhz8pBcSeMGY0xllxdlQCD835C1YA8cQQ0laI7q0A4N3sfsCzZTYE2WJquG7tOs0anJ+/9oNDZDRpVma7rZde1p0cxO3/GYutSlLUeMWfZS24P4XLdLGZs7OVFYz79tV0uk/9KRlzeFp8eX8p5pu9u3r45xyR8+jJJPzo+xZTof7t5e3QM28unVKnqR49oh/cLCdKPzh4INApS+tsDMAQ910D/3YctHhCPza3rBO3p6dPXfQfmWXBMAaiV+vSZXNgAdbmF5e1BZ7bxNTMHR040Mt1uuTpCjKvFbm4KMu86pcsDOS3DIK9vD1KT67Mf3O1i24B9PXbu1tO3nefqkn9m+V+/AJ8hHv0Fwku3AAAAAElFTkSuQmCC" alt="Luarmor API" style="width: 28px; height: 28px; display: block;">
+                        <img src="https://jnkie.com/favicon.ico" alt="Junkie SDK" style="width: 28px; height: 28px; display: block;">
                     </div>
-                    <h3>Luarmor API</h3>
-                    <p data-i18n="sdk.luarmor.desc">Luarmor security service integration with advanced encryption.</p>
-                    <span class="tag" data-i18n="sdk.luarmor.tag">Secure</span>
+                    <h3>Junkie SDK</h3>
+                    <p data-i18n="sdk.junkie.desc">Official Junkie service integration for stable key verification with automatic validation.</p>
+                    <span class="tag" data-i18n="sdk.junkie.tag">Recommended</span>
                 </div>
                 <!-- Custom HTTP -->
                 <div class="card sdk-card">
                     <div class="icon"><i class="fas fa-code"></i></div>
                     <h3 data-i18n="sdk.custom.title">Custom HTTP</h3>
-                    <p data-i18n="sdk.custom.desc">Generic HTTP configuration to connect to your own backend API.</p>
+                    <p data-i18n="sdk.custom.desc">Generic HTTP configuration to connect to your own backend API. Full control over validation logic.</p>
                     <span class="tag" data-i18n="sdk.custom.tag">Flexible</span>
                 </div>
             </div>
@@ -819,6 +851,9 @@ Patriot:LaunchLuarmor({
 })
 -- luarmor system invoke｜卢阿莫系统调用</code></pre>
                 </div>
+                <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.95rem;">
+                    <span data-i18n="example.luarmor.desc">Luarmor integration. Provide your script ID to enable license verification through Luarmor's security service.</span>
+                </p>
             </div>
 
             <!-- Panda -->
@@ -837,6 +872,9 @@ Patriot:LaunchWilkins({
 })
 -- Panda Auth Key System SDK integration｜熊猫密钥系统sdk集成</code></pre>
                 </div>
+                <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.95rem;">
+                    <span data-i18n="example.panda.desc">Panda Auth integration. Configure service ID, debug mode, tamper detection, and session handling.</span>
+                </p>
             </div>
 
             <!-- Junkie -->
@@ -852,6 +890,9 @@ Patriot:LaunchJunkie({
 -- Keys are automatically validated through Junkie
 -- 密钥通过Junkie自动验证</code></pre>
                 </div>
+                <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.95rem;">
+                    <span data-i18n="example.junkie.desc">Junkie SDK integration. Provide service name, identifier, and provider for automatic key validation.</span>
+                </p>
             </div>
 
             <!-- Custom HTTP -->
@@ -876,6 +917,9 @@ Patriot.Callbacks.OnVerify = function(key)
 end
 -- HTTP API验证 | 通过您自己的API端点验证密钥。</code></pre>
                 </div>
+                <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.95rem;">
+                    <span data-i18n="example.custom.desc">Custom HTTP validation. Define your own API endpoint to validate keys with full control over the request and response handling.</span>
+                </p>
             </div>
         </section>
 
@@ -980,7 +1024,10 @@ Patriot:Launch()</code></pre>
 
     <!-- ========== Footer ========== -->
     <footer class="container footer">
-        <div class="brand"><i class="fas fa-key"></i> Patriot Key System</div>
+        <div class="brand">
+            <img src="https://raw.githubusercontent.com/SyndromeXph/icon-2/refs/heads/main/Image_1780061789213_497.png" alt="Patriot Icon">
+            Patriot Key System
+        </div>
         <div class="footer-links">
             <a href="https://github.com/SyndromeXph/Patriot-Key-System-Ui-Library" target="_blank"><i class="fab fa-github"></i> <span data-i18n="footer.repo">Repository</span></a>
             <a href="#" onclick="alert('Welcome to submit Issues or PRs!')"><span data-i18n="footer.feedback">Feedback</span></a>
@@ -1044,6 +1091,10 @@ Patriot:Launch()</code></pre>
                     'usage.step3.desc': 'Set Appearance, Theme, Links, and call Patriot:Launch().',
                     'example.title': 'Complete Examples',
                     'example.sub': 'Click tabs below to view initialization code for each SDK.',
+                    'example.luarmor.desc': 'Luarmor integration. Provide your script ID to enable license verification through Luarmor\'s security service.',
+                    'example.panda.desc': 'Panda Auth integration. Configure service ID, debug mode, tamper detection, and session handling.',
+                    'example.junkie.desc': 'Junkie SDK integration. Provide service name, identifier, and provider for automatic key validation.',
+                    'example.custom.desc': 'Custom HTTP validation. Define your own API endpoint to validate keys with full control over the request and response handling.',
                     'config.title': 'Full Configuration',
                     'config.sub': 'Complete example with all options, callbacks, and theme customization.',
                     'footer.repo': 'Repository',
@@ -1095,6 +1146,10 @@ Patriot:Launch()</code></pre>
                     'usage.step3.desc': '设置外观、主题、链接，然后调用 Patriot:Launch()。',
                     'example.title': '完整示例',
                     'example.sub': '点击下方标签，查看每种 SDK 的初始化代码。',
+                    'example.luarmor.desc': 'Luarmor 集成。提供你的脚本 ID，通过 Luarmor 的安全服务启用许可证验证。',
+                    'example.panda.desc': 'Panda Auth 集成。配置服务 ID、调试模式、篡改检测和会话处理。',
+                    'example.junkie.desc': 'Junkie SDK 集成。提供服务名称、标识符和提供商，实现自动密钥验证。',
+                    'example.custom.desc': '自定义 HTTP 验证。定义你自己的 API 端点来验证密钥，完全控制请求和响应处理。',
                     'config.title': '完整配置',
                     'config.sub': '包含所有选项、回调和主题自定义的完整示例。',
                     'footer.repo': '仓库',
