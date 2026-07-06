@@ -1,52 +1,109 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patriot Key System · 多SDK 现代密钥系统</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patriot Key System · Modern Roblox Key UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* --- 全局重置与变量 --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ---------- 黑红主题变量 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --bg-primary: #07090e;
-            --bg-card: #0e131e;
-            --bg-card-hover: #161d2b;
-            --bg-code: #0a0d14;
-            --border-color: #1e2636;
-            --text-primary: #eef2f8;
-            --text-secondary: #b0bacd;
-            --text-muted: #6a7a94;
-            --accent: #1e88e5;
-            --accent-glow: rgba(30, 136, 229, 0.2);
+            --bg-primary: #0a0505;
+            --bg-card: #140a0a;
+            --bg-card-hover: #1f0f0f;
+            --bg-code: #0d0606;
+            --border-color: #3a1010;
+            --text-primary: #f0e6e6;
+            --text-secondary: #c4a8a8;
+            --text-muted: #8a6060;
+            --accent: #cc0000;
+            --accent-hover: #ff1a1a;
+            --accent-glow: rgba(204, 0, 0, 0.25);
             --radius: 20px;
             --radius-sm: 12px;
             --transition: 0.25s ease;
         }
-        html { scroll-behavior: smooth; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background: var(--bg-primary);
             color: var(--text-primary);
             font-family: 'Inter', sans-serif;
             line-height: 1.7;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        a { color: var(--accent); text-decoration: none; transition: color var(--transition); }
-        a:hover { color: #64b5f6; }
 
-        /* --- 导航栏 --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+        a:hover {
+            color: var(--accent-hover);
+        }
+
+        /* ---------- 语言切换 ---------- */
+        .lang-switch {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 4px;
+        }
+
+        .lang-switch button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .lang-switch button.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+
+        .lang-switch button:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* ---------- 导航栏 ---------- */
         .navbar {
             padding: 16px 0;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(7, 9, 14, 0.85);
+            background: rgba(10, 5, 5, 0.92);
             backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
             z-index: 100;
         }
+
         .navbar .container {
             display: flex;
             justify-content: space-between;
@@ -54,6 +111,7 @@
             flex-wrap: wrap;
             gap: 12px;
         }
+
         .nav-brand {
             display: flex;
             align-items: center;
@@ -62,7 +120,12 @@
             font-size: 1.4rem;
             letter-spacing: -0.5px;
         }
-        .nav-brand i { color: var(--accent); font-size: 1.6rem; }
+
+        .nav-brand i {
+            color: var(--accent);
+            font-size: 1.6rem;
+        }
+
         .nav-links {
             display: flex;
             align-items: center;
@@ -71,15 +134,19 @@
             font-size: 0.95rem;
             flex-wrap: wrap;
         }
+
         .nav-links a {
             color: var(--text-secondary);
             border-bottom: 2px solid transparent;
             padding-bottom: 4px;
+            transition: all var(--transition);
         }
+
         .nav-links a:hover {
             color: var(--text-primary);
             border-bottom-color: var(--accent);
         }
+
         .nav-cta {
             background: var(--accent);
             color: #fff !important;
@@ -89,36 +156,51 @@
             font-weight: 600;
             transition: background var(--transition), box-shadow var(--transition);
         }
+
         .nav-cta:hover {
-            background: #42a5f5 !important;
+            background: var(--accent-hover) !important;
             box-shadow: 0 0 24px var(--accent-glow);
             color: #fff !important;
         }
 
-        /* --- 通用标题 --- */
-        .section { padding: 72px 0 56px; border-bottom: 1px solid var(--border-color); }
-        .section:last-of-type { border-bottom: none; }
+        /* ---------- 通用标题 ---------- */
+        .section {
+            padding: 72px 0 56px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section:last-of-type {
+            border-bottom: none;
+        }
+
         .section-title {
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 12px;
             letter-spacing: -0.5px;
         }
+
         .section-sub {
             color: var(--text-secondary);
             font-size: 1.1rem;
             margin-bottom: 40px;
             max-width: 720px;
         }
-        .text-center { text-align: center; }
-        .text-center .section-sub { margin-left: auto; margin-right: auto; }
 
-        /* --- 卡片网格 --- */
+        .text-center {
+            text-align: center;
+        }
+        .text-center .section-sub {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ---------- 卡片 ---------- */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 24px;
         }
+
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -126,45 +208,63 @@
             padding: 32px 28px;
             transition: background var(--transition), transform var(--transition), border-color var(--transition);
         }
+
         .card:hover {
             background: var(--bg-card-hover);
-            border-color: #2e3a4e;
+            border-color: #5a1a1a;
             transform: translateY(-6px);
         }
-        .card .icon { font-size: 2.4rem; color: var(--accent); margin-bottom: 16px; }
-        .card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
-        .card p { color: var(--text-secondary); font-size: 0.95rem; }
 
-        /* --- SDK 专用卡片 (带标签) --- */
+        .card .icon {
+            font-size: 2.4rem;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+        .card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
         .sdk-card .tag {
             display: inline-block;
             background: var(--accent);
             color: #fff;
             font-size: 0.7rem;
             font-weight: 700;
-            padding: 2px 12px;
+            padding: 2px 14px;
             border-radius: 30px;
             letter-spacing: 0.5px;
             margin-top: 12px;
         }
 
-        /* --- Hero --- */
-        .hero { padding: 72px 0 56px; text-align: center; }
+        /* ---------- Hero ---------- */
+        .hero {
+            padding: 72px 0 56px;
+            text-align: center;
+        }
+
         .hero h1 {
             font-size: 3.8rem;
             font-weight: 800;
             letter-spacing: -1.5px;
-            background: linear-gradient(135deg, #fff 30%, #64b5f6 80%);
+            background: linear-gradient(135deg, #f0e6e6 30%, #cc0000 80%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .hero p {
             font-size: 1.25rem;
             color: var(--text-secondary);
             max-width: 680px;
             margin: 16px auto 32px;
         }
+
         .hero-badges {
             display: flex;
             flex-wrap: wrap;
@@ -172,6 +272,7 @@
             gap: 12px 20px;
             margin: 20px 0 32px;
         }
+
         .hero-badges span {
             background: var(--bg-card);
             padding: 6px 20px;
@@ -180,7 +281,12 @@
             font-size: 0.9rem;
             color: var(--text-secondary);
         }
-        .hero-badges i { color: var(--accent); margin-right: 8px; }
+
+        .hero-badges i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
         .btn-primary {
             display: inline-block;
             background: var(--accent);
@@ -193,14 +299,17 @@
             font-size: 1.05rem;
             cursor: pointer;
         }
+
         .btn-primary:hover {
-            background: #42a5f5;
+            background: var(--accent-hover);
             box-shadow: 0 0 32px var(--accent-glow);
             color: #fff;
         }
-        .btn-primary:active { transform: scale(0.96); }
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
 
-        /* --- 代码块 --- */
+        /* ---------- 代码块 ---------- */
         .code-block {
             background: var(--bg-code);
             border-radius: var(--radius-sm);
@@ -210,6 +319,7 @@
             margin: 16px 0 8px;
             overflow-x: auto;
         }
+
         .code-block pre {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
@@ -217,11 +327,12 @@
             white-space: pre-wrap;
             word-break: break-word;
         }
+
         .copy-btn {
             position: absolute;
             top: 12px;
             right: 16px;
-            background: #1a2232;
+            background: #1a0a0a;
             border: none;
             color: var(--text-secondary);
             padding: 4px 16px;
@@ -231,16 +342,24 @@
             transition: background var(--transition), color var(--transition);
             font-family: 'Inter', sans-serif;
         }
-        .copy-btn:hover { background: #2a3448; color: #fff; }
-        .copy-btn.copied { background: #2e7d32; color: #fff; }
 
-        /* --- SDK 切换标签页 --- */
+        .copy-btn:hover {
+            background: #2a1212;
+            color: #fff;
+        }
+        .copy-btn.copied {
+            background: #2e7d32;
+            color: #fff;
+        }
+
+        /* ---------- SDK 标签 ---------- */
         .sdk-tabs {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 24px;
         }
+
         .sdk-tab {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -250,24 +369,36 @@
             color: var(--text-secondary);
             cursor: pointer;
             transition: all var(--transition);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
         }
-        .sdk-tab:hover { border-color: var(--accent); color: var(--text-primary); }
+
+        .sdk-tab:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
         .sdk-tab.active {
             background: var(--accent);
             border-color: var(--accent);
             color: #fff;
             box-shadow: 0 0 20px var(--accent-glow);
         }
-        .sdk-content { display: none; }
-        .sdk-content.active { display: block; }
 
-        /* --- 步骤列表 --- */
+        .sdk-content {
+            display: none;
+        }
+        .sdk-content.active {
+            display: block;
+        }
+
+        /* ---------- 步骤 ---------- */
         .step-list {
             display: flex;
             flex-direction: column;
             gap: 20px;
             margin: 20px 0 12px;
         }
+
         .step-item {
             display: flex;
             gap: 20px;
@@ -277,6 +408,7 @@
             border-radius: var(--radius-sm);
             border-left: 4px solid var(--accent);
         }
+
         .step-item .num {
             background: var(--accent);
             color: #fff;
@@ -290,9 +422,12 @@
             flex-shrink: 0;
             font-size: 0.95rem;
         }
-        .step-item strong { color: var(--text-primary); }
 
-        /* --- 页脚 --- */
+        .step-item strong {
+            color: var(--text-primary);
+        }
+
+        /* ---------- 页脚 ---------- */
         .footer {
             padding: 48px 0 36px;
             border-top: 1px solid var(--border-color);
@@ -303,292 +438,483 @@
             align-items: center;
             gap: 20px;
         }
-        .footer .brand { font-weight: 600; color: var(--text-secondary); }
-        .footer .brand i { color: var(--accent); margin-right: 6px; }
-        .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-        .footer-links a { color: var(--text-muted); border-bottom: none; }
-        .footer-links a:hover { color: var(--text-primary); }
 
-        /* --- 响应式 --- */
+        .footer .brand {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .footer .brand i {
+            color: var(--accent);
+            margin-right: 6px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            border-bottom: none;
+        }
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ---------- 多语言隐藏 ---------- */
+        .lang-en,
+        .lang-zh {
+            display: none;
+        }
+
+        .lang-en.active,
+        .lang-zh.active {
+            display: block;
+        }
+
+        .lang-en.active-inline,
+        .lang-zh.active-inline {
+            display: inline;
+        }
+
+        /* ---------- 响应式 ---------- */
         @media (max-width: 768px) {
-            .navbar .container { flex-direction: column; gap: 12px; }
-            .nav-links { justify-content: center; gap: 14px; }
-            .hero h1 { font-size: 2.6rem; }
-            .section-title { font-size: 2rem; }
-            .section { padding: 48px 0 36px; }
-            .step-item { flex-wrap: wrap; }
-            .footer { flex-direction: column; text-align: center; }
+            .navbar .container {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .nav-links {
+                justify-content: center;
+                gap: 14px;
+            }
+            .hero h1 {
+                font-size: 2.6rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .section {
+                padding: 48px 0 36px;
+            }
+            .step-item {
+                flex-wrap: wrap;
+            }
+            .footer {
+                flex-direction: column;
+                text-align: center;
+            }
+            .lang-switch button {
+                padding: 4px 12px;
+                font-size: 0.65rem;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- ========== 导航栏 ========== -->
-<nav class="navbar">
-    <div class="container">
-        <div class="nav-brand"><i class="fas fa-key"></i><span>Patriot Key</span></div>
-        <div class="nav-links">
-            <a href="#features">特性</a>
-            <a href="#sdk">SDK</a>
-            <a href="#usage">使用</a>
-            <a href="#example">示例</a>
-            <a href="https://github.com/SyndromeXph/Patriot-Key-System-Ui-Library" target="_blank" class="nav-cta"><i class="fab fa-github"></i> 仓库</a>
-        </div>
-    </div>
-</nav>
-
-<main>
-    <!-- ========== HERO ========== -->
-    <section class="hero container">
-        <h1>Patriot Key System</h1>
-        <p>为 Roblox 执行器打造的现代密钥系统 UI 库。支持 <strong>Junkie、Panda Auth、Luarmor</strong> 等多 SDK 集成，持久化存储与无密钥模式。</p>
-        <div class="hero-badges">
-            <span><i class="fas fa-code"></i> Luau 96.4%</span>
-            <span><i class="fas fa-plug"></i> 3 SDK</span>
-            <span><i class="fas fa-star"></i> 3 Stars</span>
-            <span><i class="fas fa-check-circle"></i> 无密钥模式</span>
-        </div>
-        <div>
-            <a href="#example" class="btn-primary"><i class="fas fa-play"></i> 查看完整示例</a>
-        </div>
-    </section>
-
-    <!-- ========== 特性 ========== -->
-    <section class="section container" id="features">
-        <h2 class="section-title">✨ 核心特性</h2>
-        <p class="section-sub">专为执行器场景设计，兼顾灵活性与易用性。</p>
-        <div class="card-grid">
-            <div class="card"><div class="icon"><i class="fas fa-plug"></i></div><h3>多 SDK 集成</h3><p>原生支持 Junkie、Panda Auth、Luarmor，一键切换验证后端。</p></div>
-            <div class="card"><div class="icon"><i class="fas fa-database"></i></div><h3>密钥持久存储</h3><p>验证通过的密钥自动本地保存，重启无需重复输入。</p></div>
-            <div class="card"><div class="icon"><i class="fas fa-toggle-on"></i></div><h3>无密钥模式</h3><p>开发测试时可绕过验证，加速调试流程。</p></div>
-            <div class="card"><div class="icon"><i class="fas fa-paint-brush"></i></div><h3>现代 UI 设计</h3><p>适配 Roblox 执行器风格，动画流畅，交互清晰。</p></div>
-            <div class="card"><div class="icon"><i class="fas fa-shield-alt"></i></div><h3>自定义验证</h3><p>允许开发者完全自定义验证逻辑，满足特殊需求。</p></div>
-            <div class="card"><div class="icon"><i class="fas fa-sync-alt"></i></div><h3>自动更新检查</h3><p>内置更新机制，保持与最新 SDK 兼容。</p></div>
-        </div>
-    </section>
-
-    <!-- ========== 多 SDK 支持（核心） ========== -->
-    <section class="section container" id="sdk">
-        <h2 class="section-title">🔌 多 SDK 支持</h2>
-        <p class="section-sub">Patriot Key System 抽象了验证层，让你可以在不同后端服务间无缝切换。</p>
-        <div class="card-grid">
-            <div class="card sdk-card">
-                <div class="icon"><i class="fas fa-bolt"></i></div>
-                <h3>Junkie SDK</h3>
-                <p>官方 Junkie 服务集成，提供稳定的密钥验证与用户管理。</p>
-                <span class="tag">推荐</span>
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-key"></i>
+                <span>Patriot Key</span>
             </div>
-            <div class="card sdk-card">
-                <div class="icon"><i class="fas fa-panda"></i></div>
-                <h3>Panda Auth</h3>
-                <p>轻量级 Panda Auth 支持，适合小型项目与快速部署。</p>
-                <span class="tag">轻量</span>
-            </div>
-            <div class="card sdk-card">
-                <div class="icon"><i class="fas fa-shield-virus"></i></div>
-                <h3>Luarmor API</h3>
-                <p>Luarmor 安全服务集成，提供高级加密与防篡改功能。</p>
-                <span class="tag">安全</span>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div class="nav-links">
+                    <a href="#features" data-i18n="nav.features">Features</a>
+                    <a href="#sdk" data-i18n="nav.sdk">SDK</a>
+                    <a href="#usage" data-i18n="nav.usage">Usage</a>
+                    <a href="#example" data-i18n="nav.example">Example</a>
+                    <a href="https://github.com/SyndromeXph/Patriot-Key-System-Ui-Library" target="_blank" class="nav-cta">
+                        <i class="fab fa-github"></i> <span data-i18n="nav.repo">Repo</span>
+                    </a>
+                </div>
+                <div class="lang-switch">
+                    <button class="active" data-lang="en">EN</button>
+                    <button data-lang="zh">中文</button>
+                </div>
             </div>
         </div>
-    </section>
+    </nav>
 
-    <!-- ========== 使用方法 ========== -->
-    <section class="section container" id="usage">
-        <h2 class="section-title">📋 使用方法</h2>
-        <p class="section-sub">三步集成，快速上手。</p>
-        <div class="step-list">
-            <div class="step-item"><div class="num">1</div><div><strong>下载文件</strong><br>从 GitHub 获取 <code>PatriotUi.luau</code> 和 <code>Example.lua</code>。</div></div>
-            <div class="step-item"><div class="num">2</div><div><strong>选择 SDK</strong><br>在初始化时指定 <code>Junkie</code>、<code>Panda</code> 或 <code>Luarmor</code>。</div></div>
-            <div class="step-item"><div class="num">3</div><div><strong>调用 UI</strong><br>使用 <code>PatriotUi:show()</code> 并处理验证回调。</div></div>
-        </div>
-    </section>
+    <main>
+        <!-- ========== HERO ========== -->
+        <section class="hero container">
+            <h1>Patriot Key System</h1>
+            <p data-i18n="hero.desc">A modern key system UI for Roblox executors. Supports Junkie, Panda Auth, Luarmor SDK integration, persistent key storage, and keyless mode.</p>
+            <div class="hero-badges">
+                <span><i class="fas fa-code"></i> Luau 96.4%</span>
+                <span><i class="fas fa-plug"></i> <span data-i18n="hero.badgeSdk">3 SDK</span></span>
+                <span><i class="fas fa-star"></i> 3 Stars</span>
+                <span><i class="fas fa-check-circle"></i> <span data-i18n="hero.badgeKeyless">Keyless Mode</span></span>
+            </div>
+            <div>
+                <a href="#example" class="btn-primary"><i class="fas fa-play"></i> <span data-i18n="hero.cta">View Examples</span></a>
+            </div>
+        </section>
 
-    <!-- ========== 完整示例（核心） ========== -->
-    <section class="section container" id="example">
-        <h2 class="section-title">🧩 完整示例</h2>
-        <p class="section-sub">点击下方标签，查看不同 SDK 的完整集成代码。</p>
+        <!-- ========== 特性 ========== -->
+        <section class="section container" id="features">
+            <h2 class="section-title" data-i18n="features.title">✨ Core Features</h2>
+            <p class="section-sub" data-i18n="features.sub">Designed for executor scenarios, balancing flexibility and ease of use.</p>
+            <div class="card-grid">
+                <div class="card"><div class="icon"><i class="fas fa-plug"></i></div><h3 data-i18n="features.f1.title">Multi-SDK Integration</h3><p data-i18n="features.f1.desc">Native support for Junkie, Panda Auth, Luarmor, and custom HTTP backends.</p></div>
+                <div class="card"><div class="icon"><i class="fas fa-database"></i></div><h3 data-i18n="features.f2.title">Persistent Storage</h3><p data-i18n="features.f2.desc">Keys are saved locally and auto-validated on subsequent launches.</p></div>
+                <div class="card"><div class="icon"><i class="fas fa-toggle-on"></i></div><h3 data-i18n="features.f3.title">Keyless Mode</h3><p data-i18n="features.f3.desc">Skip the key system entirely with configurable keyless mode options.</p></div>
+                <div class="card"><div class="icon"><i class="fas fa-paint-brush"></i></div><h3 data-i18n="features.f4.title">Modern UI Design</h3><p data-i18n="features.f4.desc">Adapts to Roblox executor visual style with smooth animations.</p></div>
+                <div class="card"><div class="icon"><i class="fas fa-shield-alt"></i></div><h3 data-i18n="features.f5.title">Custom Validation</h3><p data-i18n="features.f5.desc">Define your own key validation logic with full control.</p></div>
+                <div class="card"><div class="icon"><i class="fas fa-sync-alt"></i></div><h3 data-i18n="features.f6.title">Auto Update Check</h3><p data-i18n="features.f6.desc">Built-in update mechanism to stay compatible with latest SDKs.</p></div>
+            </div>
+        </section>
 
-        <!-- SDK 切换标签 -->
-        <div class="sdk-tabs">
-            <div class="sdk-tab active" data-sdk="junkie">Junkie SDK</div>
-            <div class="sdk-tab" data-sdk="panda">Panda Auth</div>
-            <div class="sdk-tab" data-sdk="luarmor">Luarmor API</div>
-        </div>
+        <!-- ========== 多 SDK ========== -->
+        <section class="section container" id="sdk">
+            <h2 class="section-title" data-i18n="sdk.title">🔌 Multi-SDK Support</h2>
+            <p class="section-sub" data-i18n="sdk.sub">Patriot Key System abstracts the verification layer, allowing seamless switching between different backend services.</p>
+            <div class="card-grid">
+                <div class="card sdk-card">
+                    <div class="icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Junkie SDK</h3>
+                    <p data-i18n="sdk.junkie.desc">Official Junkie service integration for stable key verification.</p>
+                    <span class="tag" data-i18n="sdk.junkie.tag">Recommended</span>
+                </div>
+                <div class="card sdk-card">
+                    <div class="icon"><i class="fas fa-panda"></i></div>
+                    <h3>Panda Auth</h3>
+                    <p data-i18n="sdk.panda.desc">Lightweight Panda Auth support for small projects and rapid deployment.</p>
+                    <span class="tag" data-i18n="sdk.panda.tag">Lightweight</span>
+                </div>
+                <div class="card sdk-card">
+                    <div class="icon"><i class="fas fa-shield-virus"></i></div>
+                    <h3>Luarmor API</h3>
+                    <p data-i18n="sdk.luarmor.desc">Luarmor security service integration with advanced encryption.</p>
+                    <span class="tag" data-i18n="sdk.luarmor.tag">Secure</span>
+                </div>
+                <div class="card sdk-card">
+                    <div class="icon"><i class="fas fa-code"></i></div>
+                    <h3 data-i18n="sdk.custom.title">Custom HTTP</h3>
+                    <p data-i18n="sdk.custom.desc">Generic HTTP configuration to connect to your own backend API.</p>
+                    <span class="tag" data-i18n="sdk.custom.tag">Flexible</span>
+                </div>
+            </div>
+        </section>
 
-        <!-- Junkie 示例 -->
-        <div class="sdk-content active" id="sdk-junkie">
-            <div class="code-block">
-                <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
-                <pre><code>-- Patriot Key System · Junkie SDK 完整示例
+        <!-- ========== 使用方法 ========== -->
+        <section class="section container" id="usage">
+            <h2 class="section-title" data-i18n="usage.title">📋 Usage</h2>
+            <p class="section-sub" data-i18n="usage.sub">Integrate in three steps, quick start.</p>
+            <div class="step-list">
+                <div class="step-item"><div class="num">1</div><div><strong data-i18n="usage.step1.title">Download Files</strong><br><span data-i18n="usage.step1.desc">Get <code>PatriotUi.luau</code> and <code>Example.lua</code> from GitHub.</span></div></div>
+                <div class="step-item"><div class="num">2</div><div><strong data-i18n="usage.step2.title">Choose SDK</strong><br><span data-i18n="usage.step2.desc">Specify <code>Junkie</code>, <code>Panda</code>, <code>Luarmor</code> or <code>CustomHttp</code> during init.</span></div></div>
+                <div class="step-item"><div class="num">3</div><div><strong data-i18n="usage.step3.title">Initialize & Use</strong><br><span data-i18n="usage.step3.desc">Call <code>PatriotUi:setSdk()</code> with your credentials and start verification.</span></div></div>
+            </div>
+        </section>
+
+        <!-- ========== 完整示例 ========== -->
+        <section class="section container" id="example">
+            <h2 class="section-title" data-i18n="example.title">🧩 Complete Examples</h2>
+            <p class="section-sub" data-i18n="example.sub">Click tabs below to view initialization code for each SDK.</p>
+
+            <div class="sdk-tabs">
+                <div class="sdk-tab active" data-sdk="junkie">Junkie SDK</div>
+                <div class="sdk-tab" data-sdk="panda">Panda Auth</div>
+                <div class="sdk-tab" data-sdk="luarmor">Luarmor API</div>
+                <div class="sdk-tab" data-sdk="customhttp">Custom HTTP</div>
+            </div>
+
+            <!-- Junkie -->
+            <div class="sdk-content active" id="sdk-junkie">
+                <div class="code-block">
+                    <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    <pre><code>-- Patriot Key System · Junkie SDK Init
 local PatriotUi = require(script.Parent.PatriotUi)
 
--- 1. 配置 Junkie SDK
 PatriotUi:setSdk("Junkie", {
     apiKey = "your_junkie_api_key",
-    timeout = 30,
-    endpoint = "https://api.junkie.com/v2/verify",
-    retryCount = 3
-})
-
--- 2. 设置 UI 主题（可选）
-PatriotUi:setTheme({
-    primary = "#1e88e5",
-    background = "#0a0c10",
-    accent = "#64b5f6"
-})
-
--- 3. 显示 UI 并处理回调
-PatriotUi:show({
-    onSuccess = function(userData)
-        print("✅ 验证成功！用户:", userData.username)
-        -- 解锁功能
-        unlockFeatures()
-    end,
-    onFailure = function(errorCode, message)
-        print("❌ 验证失败 [", errorCode, "]: ", message)
-        -- 处理错误
-    end,
-    onClose = function()
-        print("👋 UI 已关闭")
-    end
+    secretKey = "your_junkie_secret",
+    timeout = 30
 })</code></pre>
+                </div>
             </div>
-        </div>
 
-        <!-- Panda 示例 -->
-        <div class="sdk-content" id="sdk-panda">
-            <div class="code-block">
-                <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
-                <pre><code>-- Patriot Key System · Panda Auth 完整示例
+            <!-- Panda -->
+            <div class="sdk-content" id="sdk-panda">
+                <div class="code-block">
+                    <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    <pre><code>-- Patriot Key System · Panda Auth Init
 local PatriotUi = require(script.Parent.PatriotUi)
 
--- 1. 配置 Panda Auth
 PatriotUi:setSdk("Panda", {
-    apiKey = "panda_public_key",
-    secretKey = "panda_secret_key",
-    timeout = 20,
-    sandbox = true  -- 沙箱模式
-})
-
--- 2. 设置无密钥模式（开发用）
--- PatriotUi:setKeylessMode(true)
-
--- 3. 显示 UI
-PatriotUi:show({
-    onSuccess = function()
-        print("✅ Panda Auth 验证通过")
-        -- 执行器解锁
-    end,
-    onFailure = function(err)
-        print("❌ 失败:", err)
-    end
+    publicKey = "your_panda_public_key",
+    privateKey = "your_panda_private_key",
+    sandbox = true
 })</code></pre>
+                </div>
             </div>
-        </div>
 
-        <!-- Luarmor 示例 -->
-        <div class="sdk-content" id="sdk-luarmor">
-            <div class="code-block">
-                <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
-                <pre><code>-- Patriot Key System · Luarmor API 完整示例
+            <!-- Luarmor -->
+            <div class="sdk-content" id="sdk-luarmor">
+                <div class="code-block">
+                    <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    <pre><code>-- Patriot Key System · Luarmor API Init
 local PatriotUi = require(script.Parent.PatriotUi)
 
--- 1. 配置 Luarmor
 PatriotUi:setSdk("Luarmor", {
-    apiKey = "luarmor_api_key",
+    apiKey = "your_luarmor_api_key",
     productId = "your_product_id",
-    version = "v1",
     encryption = true
-})
-
--- 2. 自定义验证逻辑（可选）
-PatriotUi:setCustomValidation(function(key)
-    -- 额外的本地验证
-    return #key > 8
-end)
-
--- 3. 显示 UI
-PatriotUi:show({
-    onSuccess = function(license)
-        print("✅ Luarmor 验证成功，许可证:", license)
-    end,
-    onFailure = function(code, msg)
-        print("❌ 失败:", code, msg)
-    end
 })</code></pre>
+                </div>
             </div>
+
+            <!-- Custom HTTP -->
+            <div class="sdk-content" id="sdk-customhttp">
+                <div class="code-block">
+                    <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    <pre><code>-- Patriot Key System · Custom HTTP Init
+local PatriotUi = require(script.Parent.PatriotUi)
+
+PatriotUi:setSdk("CustomHttp", {
+    baseUrl = "https://your-api.com/v1",
+    headers = {
+        ["Content-Type"] = "application/json",
+        ["X-API-Key"] = "your_api_key"
+    },
+    auth = {
+        type = "Bearer",
+        token = "your_bearer_token"
+    },
+    endpoints = {
+        verify = "/keys/verify"
+    },
+    timeout = 20
+})</code></pre>
+                </div>
+            </div>
+            <p style="margin-top: 20px; color: var(--text-secondary);">
+                <span data-i18n="example.footnote">💡 Full project examples available in the GitHub repository's <code>Example.lua</code> file.</span>
+            </p>
+        </section>
+    </main>
+
+    <!-- ========== 页脚 ========== -->
+    <footer class="container footer">
+        <div class="brand"><i class="fas fa-key"></i> Patriot Key System</div>
+        <div class="footer-links">
+            <a href="https://github.com/SyndromeXph/Patriot-Key-System-Ui-Library" target="_blank"><i class="fab fa-github"></i> <span data-i18n="footer.repo">Repository</span></a>
+            <a href="#" onclick="alert('Welcome to submit Issues or PRs!')"><span data-i18n="footer.feedback">Feedback</span></a>
+            <a href="#" onclick="alert('MIT License')"><span data-i18n="footer.license">License</span></a>
         </div>
-        <p style="margin-top: 20px; color: var(--text-secondary);">💡 完整项目示例请查看 GitHub 仓库的 <code>Example.lua</code> 文件。</p>
-    </section>
-</main>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">
+            &copy; 2026 <a href="https://github.com/SyndromeXph" target="_blank">SyndromeXph</a> · Modified by ArqelUi
+        </div>
+    </footer>
 
-<!-- ========== 页脚 ========== -->
-<footer class="container footer">
-    <div class="brand"><i class="fas fa-key"></i> Patriot Key System</div>
-    <div class="footer-links">
-        <a href="https://github.com/SyndromeXph/Patriot-Key-System-Ui-Library" target="_blank"><i class="fab fa-github"></i> 仓库</a>
-        <a href="#" onclick="alert('欢迎提交 Issue 或 PR！')">反馈</a>
-        <a href="#" onclick="alert('MIT License')">许可证</a>
-    </div>
-    <div style="color: var(--text-muted); font-size: 0.9rem;">&copy; 2026 SyndromeXph · Modified by ArqelUi</div>
-</footer>
+    <!-- ========== JavaScript ========== -->
+    <script>
+        (function() {
+            // ---- 语言切换 ----
+            const langButtons = document.querySelectorAll('.lang-switch button');
+            const i18nElements = document.querySelectorAll('[data-i18n]');
 
-<!-- ========== JavaScript ========== -->
-<script>
-    (function() {
-        // ---- SDK 标签切换 ----
-        const tabs = document.querySelectorAll('.sdk-tab');
-        const contents = {
-            junkie: document.getElementById('sdk-junkie'),
-            panda: document.getElementById('sdk-panda'),
-            luarmor: document.getElementById('sdk-luarmor')
-        };
+            // 翻译字典
+            const translations = {
+                en: {
+                    'nav.features': 'Features',
+                    'nav.sdk': 'SDK',
+                    'nav.usage': 'Usage',
+                    'nav.example': 'Example',
+                    'nav.repo': 'Repo',
+                    'hero.desc': 'A modern key system UI for Roblox executors. Supports Junkie, Panda Auth, Luarmor SDK integration, persistent key storage, and keyless mode.',
+                    'hero.badgeSdk': '3 SDK',
+                    'hero.badgeKeyless': 'Keyless Mode',
+                    'hero.cta': 'View Examples',
+                    'features.title': '✨ Core Features',
+                    'features.sub': 'Designed for executor scenarios, balancing flexibility and ease of use.',
+                    'features.f1.title': 'Multi-SDK Integration',
+                    'features.f1.desc': 'Native support for Junkie, Panda Auth, Luarmor, and custom HTTP backends.',
+                    'features.f2.title': 'Persistent Storage',
+                    'features.f2.desc': 'Keys are saved locally and auto-validated on subsequent launches.',
+                    'features.f3.title': 'Keyless Mode',
+                    'features.f3.desc': 'Skip the key system entirely with configurable keyless mode options.',
+                    'features.f4.title': 'Modern UI Design',
+                    'features.f4.desc': 'Adapts to Roblox executor visual style with smooth animations.',
+                    'features.f5.title': 'Custom Validation',
+                    'features.f5.desc': 'Define your own key validation logic with full control.',
+                    'features.f6.title': 'Auto Update Check',
+                    'features.f6.desc': 'Built-in update mechanism to stay compatible with latest SDKs.',
+                    'sdk.title': '🔌 Multi-SDK Support',
+                    'sdk.sub': 'Patriot Key System abstracts the verification layer, allowing seamless switching between different backend services.',
+                    'sdk.junkie.desc': 'Official Junkie service integration for stable key verification.',
+                    'sdk.junkie.tag': 'Recommended',
+                    'sdk.panda.desc': 'Lightweight Panda Auth support for small projects and rapid deployment.',
+                    'sdk.panda.tag': 'Lightweight',
+                    'sdk.luarmor.desc': 'Luarmor security service integration with advanced encryption.',
+                    'sdk.luarmor.tag': 'Secure',
+                    'sdk.custom.title': 'Custom HTTP',
+                    'sdk.custom.desc': 'Generic HTTP configuration to connect to your own backend API.',
+                    'sdk.custom.tag': 'Flexible',
+                    'usage.title': '📋 Usage',
+                    'usage.sub': 'Integrate in three steps, quick start.',
+                    'usage.step1.title': 'Download Files',
+                    'usage.step1.desc': 'Get PatriotUi.luau and Example.lua from GitHub.',
+                    'usage.step2.title': 'Choose SDK',
+                    'usage.step2.desc': 'Specify Junkie, Panda, Luarmor or CustomHttp during init.',
+                    'usage.step3.title': 'Initialize & Use',
+                    'usage.step3.desc': 'Call PatriotUi:setSdk() with your credentials and start verification.',
+                    'example.title': '🧩 Complete Examples',
+                    'example.sub': 'Click tabs below to view initialization code for each SDK.',
+                    'example.footnote': '💡 Full project examples available in the GitHub repository\'s Example.lua file.',
+                    'footer.repo': 'Repository',
+                    'footer.feedback': 'Feedback',
+                    'footer.license': 'License'
+                },
+                zh: {
+                    'nav.features': '特性',
+                    'nav.sdk': 'SDK',
+                    'nav.usage': '使用',
+                    'nav.example': '示例',
+                    'nav.repo': '仓库',
+                    'hero.desc': '为 Roblox 执行器打造的现代密钥系统 UI。支持 Junkie、Panda Auth、Luarmor SDK 集成，持久密钥存储和无密钥模式。',
+                    'hero.badgeSdk': '3 种 SDK',
+                    'hero.badgeKeyless': '无密钥模式',
+                    'hero.cta': '查看示例',
+                    'features.title': '✨ 核心特性',
+                    'features.sub': '专为执行器场景设计，兼顾灵活性与易用性。',
+                    'features.f1.title': '多 SDK 集成',
+                    'features.f1.desc': '原生支持 Junkie、Panda Auth、Luarmor 及自定义 HTTP 后端。',
+                    'features.f2.title': '持久密钥存储',
+                    'features.f2.desc': '密钥保存在本地，下次启动时自动验证。',
+                    'features.f3.title': '无密钥模式',
+                    'features.f3.desc': '通过可配置选项完全跳过密钥系统。',
+                    'features.f4.title': '现代 UI 设计',
+                    'features.f4.desc': '适配 Roblox 执行器视觉风格，动画流畅。',
+                    'features.f5.title': '自定义验证',
+                    'features.f5.desc': '完全控制，定义你自己的密钥验证逻辑。',
+                    'features.f6.title': '自动更新检查',
+                    'features.f6.desc': '内置更新机制，保持与最新 SDK 兼容。',
+                    'sdk.title': '🔌 多 SDK 支持',
+                    'sdk.sub': 'Patriot Key System 抽象了验证层，让你在不同后端服务间无缝切换。',
+                    'sdk.junkie.desc': '官方 Junkie 服务集成，提供稳定的密钥验证。',
+                    'sdk.junkie.tag': '推荐',
+                    'sdk.panda.desc': '轻量级 Panda Auth 支持，适合小型项目和快速部署。',
+                    'sdk.panda.tag': '轻量',
+                    'sdk.luarmor.desc': 'Luarmor 安全服务集成，提供高级加密。',
+                    'sdk.luarmor.tag': '安全',
+                    'sdk.custom.title': '自定义 HTTP',
+                    'sdk.custom.desc': '通用 HTTP 配置，对接你自己的后端 API。',
+                    'sdk.custom.tag': '灵活',
+                    'usage.title': '📋 使用方法',
+                    'usage.sub': '三步集成，快速上手。',
+                    'usage.step1.title': '下载文件',
+                    'usage.step1.desc': '从 GitHub 获取 PatriotUi.luau 和 Example.lua。',
+                    'usage.step2.title': '选择 SDK',
+                    'usage.step2.desc': '在初始化时指定 Junkie、Panda、Luarmor 或 CustomHttp。',
+                    'usage.step3.title': '初始化并使用',
+                    'usage.step3.desc': '调用 PatriotUi:setSdk() 并传入凭证，开始验证。',
+                    'example.title': '🧩 完整示例',
+                    'example.sub': '点击下方标签，查看每种 SDK 的初始化代码。',
+                    'example.footnote': '💡 完整项目示例请查看 GitHub 仓库的 Example.lua 文件。',
+                    'footer.repo': '仓库',
+                    'footer.feedback': '反馈',
+                    'footer.license': '许可证'
+                }
+            };
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                // 更新标签状态
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                // 更新内容显示
-                const sdk = this.dataset.sdk;
-                Object.keys(contents).forEach(key => {
-                    contents[key].classList.toggle('active', key === sdk);
+            function setLanguage(lang) {
+                // 更新按钮状态
+                langButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+
+                // 更新所有带 data-i18n 属性的元素
+                i18nElements.forEach(el => {
+                    const key = el.dataset.i18n;
+                    if (translations[lang] && translations[lang][key]) {
+                        el.textContent = translations[lang][key];
+                    }
+                });
+
+                // 更新 html lang 属性
+                document.documentElement.lang = lang;
+
+                // 更新复制按钮文本
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    if (lang === 'zh') {
+                        btn.innerHTML = '<i class="fas fa-copy"></i> 复制';
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    }
+                });
+
+                localStorage.setItem('patriot-lang', lang);
+            }
+
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    setLanguage(this.dataset.lang);
                 });
             });
-        });
 
-        // ---- 复制代码（所有代码块） ----
-        document.querySelectorAll('.code-block').forEach(block => {
-            const btn = block.querySelector('.copy-btn');
-            const code = block.querySelector('pre code');
-            if (!btn || !code) return;
+            // 加载保存的语言，默认英文
+            const savedLang = localStorage.getItem('patriot-lang') || 'en';
+            setLanguage(savedLang);
 
-            btn.addEventListener('click', async function() {
-                const text = code.innerText;
-                try {
-                    await navigator.clipboard.writeText(text);
-                    this.innerHTML = '<i class="fas fa-check"></i> 已复制';
-                    this.classList.add('copied');
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="fas fa-copy"></i> 复制';
-                        this.classList.remove('copied');
-                    }, 2500);
-                } catch {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    this.innerHTML = '<i class="fas fa-check"></i> 已复制';
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="fas fa-copy"></i> 复制';
-                    }, 2000);
-                }
+            // ---- SDK 标签切换 ----
+            const tabs = document.querySelectorAll('.sdk-tab');
+            const contents = {
+                junkie: document.getElementById('sdk-junkie'),
+                panda: document.getElementById('sdk-panda'),
+                luarmor: document.getElementById('sdk-luarmor'),
+                customhttp: document.getElementById('sdk-customhttp')
+            };
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const sdk = this.dataset.sdk;
+                    Object.keys(contents).forEach(key => {
+                        contents[key].classList.toggle('active', key === sdk);
+                    });
+                });
             });
-        });
-    })();
-</script>
+
+            // ---- 复制代码 ----
+            document.querySelectorAll('.code-block').forEach(block => {
+                const btn = block.querySelector('.copy-btn');
+                const code = block.querySelector('pre code');
+                if (!btn || !code) return;
+
+                btn.addEventListener('click', async function() {
+                    const text = code.innerText;
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        const lang = document.documentElement.lang;
+                        this.innerHTML = '<i class="fas fa-check"></i> ' + (lang === 'zh' ? '已复制' : 'Copied');
+                        this.classList.add('copied');
+                        setTimeout(() => {
+                            const l = document.documentElement.lang;
+                            this.innerHTML = '<i class="fas fa-copy"></i> ' + (l === 'zh' ? '复制' : 'Copy');
+                            this.classList.remove('copied');
+                        }, 2500);
+                    } catch {
+                        const ta = document.createElement('textarea');
+                        ta.value = text;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                        const lang = document.documentElement.lang;
+                        this.innerHTML = '<i class="fas fa-check"></i> ' + (lang === 'zh' ? '已复制' : 'Copied');
+                        setTimeout(() => {
+                            const l = document.documentElement.lang;
+                            this.innerHTML = '<i class="fas fa-copy"></i> ' + (l === 'zh' ? '复制' : 'Copy');
+                        }, 2000);
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
