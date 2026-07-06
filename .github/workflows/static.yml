@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patriot Key System · 介绍与使用</title>
+    <!-- 使用 Nunito 和 JetBrains Mono 字体，提升技术感 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* 全局重置与变量 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0d11;
+            color: #e4e7ec;
+            font-family: 'Nunito', sans-serif;
+            line-height: 1.7;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #2a2f3a;
+            padding-bottom: 1.5rem;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: #1e88e5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(30, 136, 229, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header .badge {
+            background: #2a2f3a;
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #aab;
+            margin-left: auto;
+            border: 1px solid #3f4552;
+        }
+
+        /* 通用卡片 */
+        .card {
+            background: #13171f;
+            border-radius: 20px;
+            padding: 2rem 2rem 2.2rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid #252b36;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease, border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: #3a4050;
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card h2 .emoji {
+            font-size: 1.8rem;
+        }
+
+        .card p, .card li {
+            color: #c8cdd6;
+            margin-bottom: 0.75rem;
+        }
+
+        .card ul, .card ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card li {
+            margin-bottom: 0.4rem;
+        }
+
+        a {
+            color: #64b5f6;
+            text-decoration: none;
+            border-bottom: 1px dotted #3a5a7a;
+        }
+
+        a:hover {
+            color: #90caf9;
+            border-bottom: 1px solid #64b5f6;
+        }
+
+        /* 代码块 */
+        .code-block {
+            background: #0a0c10;
+            border-radius: 14px;
+            padding: 1.5rem;
+            border: 1px solid #262d38;
+            overflow-x: auto;
+            margin: 1rem 0 0.5rem 0;
+            position: relative;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #d4dae5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: #252c38;
+            border: none;
+            color: #aab;
+            padding: 4px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .code-block .copy-btn:hover {
+            background: #3a4355;
+            color: #fff;
+        }
+
+        .code-block .copy-btn.copied {
+            background: #2e7d32;
+            color: #fff;
+        }
+
+        /* 特性网格 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .feature-item {
+            background: #1a202a;
+            padding: 1.2rem 1rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #2a313e;
+            transition: background 0.2s;
+        }
+
+        .feature-item:hover {
+            background: #202836;
+        }
+
+        .feature-item .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .feature-item strong {
+            display: block;
+            font-weight: 600;
+            color: #e8ecf3;
+        }
+
+        .feature-item span {
+            font-size: 0.9rem;
+            color: #9aa4b8;
+        }
+
+        /* 模拟验证器 */
+        .demo-box {
+            background: #0e121a;
+            border-radius: 16px;
+            padding: 1.8rem 1.8rem 2rem;
+            margin-top: 1.2rem;
+            border: 1px solid #2a313e;
+        }
+
+        .demo-box .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .demo-box input {
+            flex: 2;
+            min-width: 180px;
+            padding: 0.7rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #333b48;
+            background: #080b10;
+            color: #e4e7ec;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .demo-box input:focus {
+            border-color: #1e88e5;
+        }
+
+        .demo-box button {
+            padding: 0.7rem 1.8rem;
+            border-radius: 40px;
+            border: none;
+            background: #1e88e5;
+            color: #fff;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 12px rgba(30, 136, 229, 0.3);
+        }
+
+        .demo-box button:hover {
+            background: #42a5f5;
+        }
+
+        .demo-box button:active {
+            transform: scale(0.96);
+        }
+
+        .demo-box .status {
+            margin-top: 0.6rem;
+            font-weight: 600;
+            min-height: 2.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #b0b8c9;
+        }
+
+        .demo-box .status.success {
+            color: #66bb6a;
+        }
+
+        .demo-box .status.error {
+            color: #ef5350;
+        }
+
+        /* 步骤 */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.2rem 0 0.2rem;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: #10161f;
+            padding: 1rem 1.4rem;
+            border-radius: 14px;
+            border-left: 4px solid #1e88e5;
+        }
+
+        .step-item .num {
+            background: #1e88e5;
+            color: #fff;
+            font-weight: 700;
+            width: 28px;
+            height: 28px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        .step-item .content {
+            flex: 1;
+        }
+
+        .step-item .content strong {
+            color: #e4e7ec;
+        }
+
+        /* 页脚 */
+        .footer {
+            margin-top: 3.5rem;
+            text-align: center;
+            color: #5a647a;
+            font-size: 0.9rem;
+            border-top: 1px solid #1f2530;
+            padding-top: 2rem;
+        }
+
+        .footer a {
+            border-bottom: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            body { padding: 1rem 0.8rem; }
+            .card { padding: 1.5rem; }
+            .header h1 { font-size: 1.5rem; }
+            .header .badge { margin-left: 0; width: 100%; text-align: center; }
+            .step-item { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- 头部 -->
+    <header class="header">
+        <div class="header-icon">🔑</div>
+        <h1>Patriot Key System</h1>
+        <div class="badge">v1.0 · Roblox Executor UI</div>
+    </header>
+
+    <!-- 1. 简介 -->
+    <section class="card">
+        <h2><span class="emoji">📘</span> 项目简介</h2>
+        <p>
+            <strong>Patriot Key System</strong> 是一个为 Roblox 执行器打造的现代密钥系统 UI 库。
+            由 <strong>ArqelUi</strong> 修改，支持多种 SDK 集成（Junkie、Panda Auth、Luarmor API）、
+            持久化密钥存储以及无密钥模式。
+        </p>
+        <p>
+            👉 仓库地址：<a href="https://github.com/SyndromeXph/Patriot-Key-System-Ui-Library" target="_blank">SyndromeXph/Patriot-Key-System-Ui-Library</a>
+        </p>
+        <div class="feature-grid">
+            <div class="feature-item"><span class="icon">🔗</span><strong>多 SDK 集成</strong><span>Junkie · Panda · Luarmor</span></div>
+            <div class="feature-item"><span class="icon">💾</span><strong>密钥持久存储</strong><span>本地保存，无需重复输入</span></div>
+            <div class="feature-item"><span class="icon">🚀</span><strong>无密钥模式</strong><span>可绕过验证，快速测试</span></div>
+            <div class="feature-item"><span class="icon">🎨</span><strong>现代 UI</strong><span>适配 Roblox 执行器风格</span></div>
+        </div>
+    </section>
+
+    <!-- 2. 使用方法（步骤） -->
+    <section class="card">
+        <h2><span class="emoji">📋</span> 使用方法</h2>
+        <p>将库集成到你的 Roblox 执行器脚本中，只需三步：</p>
+        <div class="step-list">
+            <div class="step-item">
+                <div class="num">1</div>
+                <div class="content"><strong>下载文件</strong><br>从仓库获取 <code>PatriotUi.luau</code> 以及 <code>Example.lua</code> 示例文件。</div>
+            </div>
+            <div class="step-item">
+                <div class="num">2</div>
+                <div class="content"><strong>导入并配置</strong><br>在你的主脚本中 <code>require</code> 或加载 <code>PatriotUi.luau</code>，并根据需要选择 SDK（Junkie/Panda/Luarmor）。</div>
+            </div>
+            <div class="step-item">
+                <div class="num">3</div>
+                <div class="content"><strong>启动验证</strong><br>调用 UI 显示方法，处理验证回调。参考 <code>Example.lua</code> 中的完整流程。</div>
+            </div>
+        </div>
+        <p style="margin-top: 0.8rem;">详细参数请查阅仓库中的 <code>README.md</code> 和 <code>CHANGELOG.md</code>。</p>
+    </section>
+
+    <!-- 3. 代码示例 + 复制 -->
+    <section class="card">
+        <h2><span class="emoji">🧩</span> 代码示例（Example.lua）</h2>
+        <p>以下是一个简单的集成示例，展示如何调用 UI 并处理验证结果：</p>
+        <div class="code-block">
+            <button class="copy-btn" id="copyCodeBtn">📋 复制</button>
+            <pre id="codeContent"><code>-- Patriot Key System 示例
+local PatriotUi = require(script.Parent.PatriotUi)
+
+-- 配置 SDK (以 Junkie 为例)
+PatriotUi:setSdk("Junkie", {
+    apiKey = "your_junkie_key",
+    timeout = 30
+})
+
+-- 显示 UI 并等待验证结果
+PatriotUi:show({
+    onSuccess = function()
+        print("✅ 密钥验证成功！")
+        -- 解锁执行器功能
+    end,
+    onFailure = function(err)
+        print("❌ 验证失败:", err)
+    end,
+    onClose = function()
+        print("👋 UI 已关闭")
+    end
+})</code></pre>
+        </div>
+        <p style="margin-top: 0.6rem; font-size: 0.95rem; color: #9aa4b8;">
+            💡 更多用法（Panda Auth、Luarmor）请查看仓库中的 <code>Example.lua</code> 完整文件。
+        </p>
+    </section>
+
+    <!-- 4. 动态模拟器 (在线体验) -->
+    <section class="card">
+        <h2><span class="emoji">🎮</span> 在线体验 · 模拟验证</h2>
+        <p>输入任意密钥，点击验证，体验 UI 的交互反馈（模拟效果）。</p>
+        <div class="demo-box">
+            <div class="input-group">
+                <input type="text" id="keyInput" placeholder="输入密钥 (例如: PATRIOT-2026)" value="PATRIOT-2026">
+                <button id="verifyBtn">🔓 验证</button>
+            </div>
+            <div class="status" id="statusDisplay">💡 等待验证...</div>
+        </div>
+        <p style="margin-top: 0.8rem; font-size: 0.9rem; color: #7a849c;">
+            ⚡ 前端模拟仅展示交互逻辑，实际验证由后端 SDK 完成。
+        </p>
+    </section>
+
+    <!-- 5. 页脚 -->
+    <footer class="footer">
+        <p>
+            <a href="https://github.com/SyndromeXph/Patriot-Key-System-Ui-Library" target="_blank">GitHub 仓库</a> · 
+            <a href="#" onclick="alert('欢迎提交 Issue 或 PR ！')">反馈建议</a> · 
+            Modified by ArqelUi
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">基于 GitHub Pages 构建 · 纯静态演示</p>
+    </footer>
+</div>
+
+<script>
+    (function() {
+        // ---------- 1. 复制代码 ----------
+        const copyBtn = document.getElementById('copyCodeBtn');
+        const codeContent = document.getElementById('codeContent');
+
+        copyBtn.addEventListener('click', async function() {
+            const textToCopy = codeContent.innerText;
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                copyBtn.textContent = '✅ 已复制';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 复制';
+                    copyBtn.classList.remove('copied');
+                }, 2500);
+            } catch (err) {
+                // 降级方案：使用 document.execCommand
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                copyBtn.textContent = '✅ 已复制';
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 复制';
+                }, 2000);
+            }
+        });
+
+        // ---------- 2. 模拟验证器 ----------
+        const keyInput = document.getElementById('keyInput');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const statusDisplay = document.getElementById('statusDisplay');
+
+        // 模拟验证逻辑 (仅展示 UI 交互)
+        function simulateVerification(inputKey) {
+            const cleanKey = inputKey.trim();
+            // 规则：非空且长度大于 4 视为“有效”
+            if (cleanKey.length > 4) {
+                statusDisplay.className = 'status success';
+                statusDisplay.innerHTML = '✅ 验证成功！欢迎使用 Patriot Key System (模拟)';
+            } else {
+                statusDisplay.className = 'status error';
+                statusDisplay.innerHTML = '❌ 无效密钥，请重新输入 (模拟)';
+            }
+        }
+
+        verifyBtn.addEventListener('click', function() {
+            const val = keyInput.value;
+            if (!val || val.length === 0) {
+                statusDisplay.className = 'status error';
+                statusDisplay.innerHTML = '⚠️ 请输入密钥';
+                return;
+            }
+            simulateVerification(val);
+        });
+
+        // 回车触发验证
+        keyInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyBtn.click();
+            }
+        });
+
+        // 页面载入后默认演示一次
+        window.addEventListener('load', function() {
+            // 延迟一下，让用户看到初始状态
+            setTimeout(() => {
+                statusDisplay.className = 'status';
+                statusDisplay.innerHTML = '💡 点击 "验证" 或按回车体验';
+            }, 300);
+        });
+
+    })();
+</script>
+
+</body>
+</html>
