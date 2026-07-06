@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Patriot Key System · Modern Roblox Key UI</title>
+    <title>Patriot Key System · Complete Documentation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ---------- 黑红主题变量 ---------- */
+        /* ---------- Black & Red Theme ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -30,7 +30,7 @@
             --accent-glow: rgba(204, 0, 0, 0.25);
             --radius: 20px;
             --radius-sm: 12px;
-            --transition: 0.25s ease;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         html {
@@ -42,6 +42,12 @@
             color: var(--text-primary);
             font-family: 'Inter', sans-serif;
             line-height: 1.7;
+            opacity: 0;
+            animation: bodyFadeIn 1s ease forwards;
+        }
+
+        @keyframes bodyFadeIn {
+            to { opacity: 1; }
         }
 
         .container {
@@ -59,7 +65,7 @@
             color: var(--accent-hover);
         }
 
-        /* ---------- 语言切换 ---------- */
+        /* ---------- Language Switch ---------- */
         .lang-switch {
             display: flex;
             gap: 6px;
@@ -93,7 +99,7 @@
             color: var(--text-primary);
         }
 
-        /* ---------- 导航栏 ---------- */
+        /* ---------- Navbar ---------- */
         .navbar {
             padding: 16px 0;
             border-bottom: 1px solid var(--border-color);
@@ -102,6 +108,12 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            transform: translateY(-100%);
+            animation: slideDown 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes slideDown {
+            to { transform: translateY(0); }
         }
 
         .navbar .container {
@@ -140,11 +152,26 @@
             border-bottom: 2px solid transparent;
             padding-bottom: 4px;
             transition: all var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
         }
 
         .nav-links a:hover {
             color: var(--text-primary);
-            border-bottom-color: var(--accent);
         }
 
         .nav-cta {
@@ -154,20 +181,35 @@
             border-radius: 40px;
             border-bottom: none !important;
             font-weight: 600;
-            transition: background var(--transition), box-shadow var(--transition);
+            transition: background var(--transition), box-shadow var(--transition), transform 0.2s;
         }
 
         .nav-cta:hover {
             background: var(--accent-hover) !important;
             box-shadow: 0 0 24px var(--accent-glow);
             color: #fff !important;
+            transform: scale(1.05);
         }
 
-        /* ---------- 通用标题 ---------- */
+        /* ---------- Sections ---------- */
         .section {
             padding: 72px 0 56px;
             border-bottom: 1px solid var(--border-color);
+            opacity: 0;
+            transform: translateY(40px);
+            animation: sectionFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+        .section:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes sectionFadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .section:last-of-type {
             border-bottom: none;
         }
@@ -177,6 +219,11 @@
             font-weight: 800;
             margin-bottom: 12px;
             letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #f0e6e6 30%, #cc0000 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
         }
 
         .section-sub {
@@ -194,7 +241,7 @@
             margin-right: auto;
         }
 
-        /* ---------- 卡片 ---------- */
+        /* ---------- Cards ---------- */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -206,20 +253,56 @@
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
             padding: 32px 28px;
-            transition: background var(--transition), transform var(--transition), border-color var(--transition);
+            transition: all var(--transition);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(204, 0, 0, 0.08), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
         }
 
         .card:hover {
             background: var(--bg-card-hover);
             border-color: #5a1a1a;
-            transform: translateY(-6px);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 12px 40px rgba(204, 0, 0, 0.15);
         }
 
         .card .icon {
             font-size: 2.4rem;
             color: var(--accent);
             margin-bottom: 16px;
+            transition: transform var(--transition);
         }
+
+        .card:hover .icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .card .icon img {
+            display: block;
+            transition: transform var(--transition);
+        }
+
+        .card:hover .icon img {
+            transform: scale(1.1);
+        }
+
         .card h3 {
             font-size: 1.3rem;
             font-weight: 700;
@@ -240,22 +323,40 @@
             border-radius: 30px;
             letter-spacing: 0.5px;
             margin-top: 12px;
+            transition: all var(--transition);
+        }
+
+        .sdk-card:hover .tag {
+            background: var(--accent-hover);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         /* ---------- Hero ---------- */
         .hero {
             padding: 72px 0 56px;
             text-align: center;
+            opacity: 0;
+            animation: heroFade 1s ease 0.3s forwards;
+        }
+
+        @keyframes heroFade {
+            to { opacity: 1; }
         }
 
         .hero h1 {
-            font-size: 3.8rem;
+            font-size: 4.2rem;
             font-weight: 800;
-            letter-spacing: -1.5px;
-            background: linear-gradient(135deg, #f0e6e6 30%, #cc0000 80%);
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #f0e6e6 20%, #cc0000 70%, #ff4d4d);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: heroGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes heroGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(204, 0, 0, 0.3)); }
+            100% { filter: drop-shadow(0 0 30px rgba(204, 0, 0, 0.6)); }
         }
 
         .hero p {
@@ -280,6 +381,13 @@
             border: 1px solid var(--border-color);
             font-size: 0.9rem;
             color: var(--text-secondary);
+            transition: all var(--transition);
+        }
+
+        .hero-badges span:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(204, 0, 0, 0.15);
         }
 
         .hero-badges i {
@@ -294,22 +402,40 @@
             font-weight: 600;
             padding: 14px 44px;
             border-radius: 40px;
-            transition: background var(--transition), box-shadow var(--transition), transform 0.1s;
+            transition: all var(--transition);
             border: none;
             font-size: 1.05rem;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
         }
 
         .btn-primary:hover {
             background: var(--accent-hover);
-            box-shadow: 0 0 32px var(--accent-glow);
+            box-shadow: 0 0 40px var(--accent-glow);
             color: #fff;
+            transform: translateY(-2px) scale(1.02);
         }
         .btn-primary:active {
             transform: scale(0.96);
         }
 
-        /* ---------- 代码块 ---------- */
+        /* ---------- Code Blocks ---------- */
         .code-block {
             background: var(--bg-code);
             border-radius: var(--radius-sm);
@@ -318,14 +444,25 @@
             position: relative;
             margin: 16px 0 8px;
             overflow-x: auto;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .code-block:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(204, 0, 0, 0.08);
         }
 
         .code-block pre {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: #d4dae5;
             white-space: pre-wrap;
             word-break: break-word;
+        }
+
+        .code-block pre code .comment {
+            color: #6a7a94;
+            font-style: italic;
         }
 
         .copy-btn {
@@ -339,20 +476,27 @@
             border-radius: 30px;
             font-size: 0.75rem;
             cursor: pointer;
-            transition: background var(--transition), color var(--transition);
+            transition: all var(--transition);
             font-family: 'Inter', sans-serif;
+            opacity: 0.6;
+        }
+
+        .code-block:hover .copy-btn {
+            opacity: 1;
         }
 
         .copy-btn:hover {
             background: #2a1212;
             color: #fff;
+            transform: scale(1.05);
         }
         .copy-btn.copied {
             background: #2e7d32;
             color: #fff;
+            opacity: 1;
         }
 
-        /* ---------- SDK 标签 ---------- */
+        /* ---------- SDK Tabs ---------- */
         .sdk-tabs {
             display: flex;
             gap: 12px;
@@ -371,27 +515,43 @@
             transition: all var(--transition);
             font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sdk-tab img {
+            vertical-align: middle;
         }
 
         .sdk-tab:hover {
             border-color: var(--accent);
             color: var(--text-primary);
+            transform: translateY(-2px);
         }
         .sdk-tab.active {
             background: var(--accent);
             border-color: var(--accent);
             color: #fff;
-            box-shadow: 0 0 20px var(--accent-glow);
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-2px);
         }
 
         .sdk-content {
             display: none;
+            animation: contentFade 0.4s ease forwards;
         }
+
+        @keyframes contentFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .sdk-content.active {
             display: block;
         }
 
-        /* ---------- 步骤 ---------- */
+        /* ---------- Steps ---------- */
         .step-list {
             display: flex;
             flex-direction: column;
@@ -407,6 +567,13 @@
             padding: 20px 28px;
             border-radius: var(--radius-sm);
             border-left: 4px solid var(--accent);
+            transition: all var(--transition);
+        }
+
+        .step-item:hover {
+            background: var(--bg-card-hover);
+            transform: translateX(8px);
+            border-left-color: var(--accent-hover);
         }
 
         .step-item .num {
@@ -421,13 +588,19 @@
             justify-content: center;
             flex-shrink: 0;
             font-size: 0.95rem;
+            transition: all var(--transition);
+        }
+
+        .step-item:hover .num {
+            background: var(--accent-hover);
+            transform: scale(1.1);
         }
 
         .step-item strong {
             color: var(--text-primary);
         }
 
-        /* ---------- 页脚 ---------- */
+        /* ---------- Footer ---------- */
         .footer {
             padding: 48px 0 36px;
             border-top: 1px solid var(--border-color);
@@ -437,6 +610,12 @@
             justify-content: space-between;
             align-items: center;
             gap: 20px;
+            opacity: 0;
+            animation: footerFade 0.8s ease 0.8s forwards;
+        }
+
+        @keyframes footerFade {
+            to { opacity: 1; }
         }
 
         .footer .brand {
@@ -456,28 +635,14 @@
         .footer-links a {
             color: var(--text-muted);
             border-bottom: none;
+            transition: all var(--transition);
         }
         .footer-links a:hover {
             color: var(--text-primary);
+            transform: translateY(-2px);
         }
 
-        /* ---------- 多语言隐藏 ---------- */
-        .lang-en,
-        .lang-zh {
-            display: none;
-        }
-
-        .lang-en.active,
-        .lang-zh.active {
-            display: block;
-        }
-
-        .lang-en.active-inline,
-        .lang-zh.active-inline {
-            display: inline;
-        }
-
-        /* ---------- 响应式 ---------- */
+        /* ---------- Responsive ---------- */
         @media (max-width: 768px) {
             .navbar .container {
                 flex-direction: column;
@@ -512,7 +677,7 @@
 </head>
 <body>
 
-    <!-- ========== 导航栏 ========== -->
+    <!-- ========== Navbar ========== -->
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
@@ -538,13 +703,13 @@
     </nav>
 
     <main>
-        <!-- ========== HERO ========== -->
+        <!-- ========== Hero ========== -->
         <section class="hero container">
             <h1>Patriot Key System</h1>
             <p data-i18n="hero.desc">A modern key system UI for Roblox executors. Supports Junkie, Panda Auth, Luarmor SDK integration, persistent key storage, and keyless mode.</p>
             <div class="hero-badges">
                 <span><i class="fas fa-code"></i> Luau 96.4%</span>
-                <span><i class="fas fa-plug"></i> <span data-i18n="hero.badgeSdk">3 SDK</span></span>
+                <span><i class="fas fa-plug"></i> <span data-i18n="hero.badgeSdk">4 SDK</span></span>
                 <span><i class="fas fa-star"></i> 3 Stars</span>
                 <span><i class="fas fa-check-circle"></i> <span data-i18n="hero.badgeKeyless">Keyless Mode</span></span>
             </div>
@@ -553,9 +718,9 @@
             </div>
         </section>
 
-        <!-- ========== 特性 ========== -->
+        <!-- ========== Features ========== -->
         <section class="section container" id="features">
-            <h2 class="section-title" data-i18n="features.title">✨ Core Features</h2>
+            <h2 class="section-title" data-i18n="features.title">Core Features</h2>
             <p class="section-sub" data-i18n="features.sub">Designed for executor scenarios, balancing flexibility and ease of use.</p>
             <div class="card-grid">
                 <div class="card"><div class="icon"><i class="fas fa-plug"></i></div><h3 data-i18n="features.f1.title">Multi-SDK Integration</h3><p data-i18n="features.f1.desc">Native support for Junkie, Panda Auth, Luarmor, and custom HTTP backends.</p></div>
@@ -567,29 +732,39 @@
             </div>
         </section>
 
-        <!-- ========== 多 SDK ========== -->
+        <!-- ========== Multi-SDK Support ========== -->
         <section class="section container" id="sdk">
-            <h2 class="section-title" data-i18n="sdk.title">🔌 Multi-SDK Support</h2>
+            <h2 class="section-title" data-i18n="sdk.title">Multi-SDK Support</h2>
             <p class="section-sub" data-i18n="sdk.sub">Patriot Key System abstracts the verification layer, allowing seamless switching between different backend services.</p>
             <div class="card-grid">
+                <!-- Junkie -->
                 <div class="card sdk-card">
-                    <div class="icon"><i class="fas fa-bolt"></i></div>
+                    <div class="icon">
+                        <img src="https://jnkie.com/favicon.ico" alt="Junkie SDK" style="width: 28px; height: 28px; display: block;">
+                    </div>
                     <h3>Junkie SDK</h3>
                     <p data-i18n="sdk.junkie.desc">Official Junkie service integration for stable key verification.</p>
                     <span class="tag" data-i18n="sdk.junkie.tag">Recommended</span>
                 </div>
+                <!-- Panda -->
                 <div class="card sdk-card">
-                    <div class="icon"><i class="fas fa-panda"></i></div>
+                    <div class="icon">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAllBMVEVHcEz////39/fp6en19fX6+vqJiYlZWVnOzs729vbv7+9oaGgmJiaVlZXq6upfX1+mpqb///8PDw8AAAB8fHzt7e39/f2Ojo40NDTv7+/Pz8+qqqpycnLExMSzs7O/v79GRkZubm5TU1OcnJzY2Nj09PQeHh6Dg4P+/v4bGxs8PDz19fXh4eHt7e3p6emwsLD6+vqsrKzHiNUBAAAAMXRSTlMAVDwLKLr//8SlG////5v/////////rP//19H//6na////////////df//av+Cg+zkubW+HQAAAShJREFUeAFk0UViwzAUAFGZmxi/J8ymMN7/co1Jhcz2iaV+Z5jqM8MwLKVsx/W+3mwPjKGlbeAHQRiFcSIpo/Fkymw017igbinyRlj5wFrjBoKt1O2oy3KK31huqxorYH/A/4XHPZKQ1JjiezGxN+nNcsmlhKAcl7vViZiziN1hBIWM8XFF6iUzEOmPW0BZpTArwqIAdjlbEasxM4fmJCMZQXrinDMVuTR4AU+k3F2lvOYwi33qTaMGb5BIH12VtOe9k/m9JT16U6dd9ioZRYvTzlb77gFNEVlBXD9gro2japJWScPypM23W3Ra1WUn4KHabNHaz+Ns6M/+rVltLJTuqbWzl6U+VNtQiz6UZHGz30LP6zKbyQfwH4b6bHgZOM76aKvv0RwAAP1dJ18vAJOEAAAAAElFTkSuQmCC" alt="Panda Auth" style="width: 28px; height: 28px; display: block;">
+                    </div>
                     <h3>Panda Auth</h3>
                     <p data-i18n="sdk.panda.desc">Lightweight Panda Auth support for small projects and rapid deployment.</p>
                     <span class="tag" data-i18n="sdk.panda.tag">Lightweight</span>
                 </div>
+                <!-- Luarmor -->
                 <div class="card sdk-card">
-                    <div class="icon"><i class="fas fa-shield-virus"></i></div>
+                    <div class="icon">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAMAAAAocOYLAAAAXVBMVEVHcEy9rWPMvFvNvlbHuFfPv1jKu2XPwFLKulfLu1XMvVfNvVbUxUbMvFW3plnOvlXVyYq1pFe8q1a6qViyoFe2pFnEtFizol2wnlezoVizolnGtldfSh6zoVq1o12UyztSAAAAH3RSTlMAFiSoWDYKinTIQf//3YzsA///8OfI7kL/oE///3AvsA3vpAAAAUlJREFUeAFioCIAFCpHSXKCAABEG0RUUQUUZWT1/seMYlVmslmT/n0tZEEhVakfXFd13VRt8eTU5qxTPNWWQspnpjJG9abhz8pBcSeMGY0xllxdlQCD835C1YA8cQQ0laI7q0A4N3sfsCzZTYE2WJquG7tOs0anJ+/9oNDZDRpVma7rZde1p0cxO3/GYutSlLUeMWfZS24P4XLdLGZs7OVFYz79tV0uk/9KRlzeFp8eX8p5pu9u3r45xyR8+jJJPzo+xZTof7t5e3QM28unVKnqR49oh/cLCdKPzh4INApS+tsDMAQ910D/3YctHhCPza3rBO3p6dPXfQfmWXBMAaiV+vSZXNgAdbmF5e1BZ7bxNTMHR040Mt1uuTpCjKvFbm4KMu86pcsDOS3DIK9vD1KT67Mf3O1i24B9PXbu1tO3nefqkn9m+V+/AJ8hHv0Fwku3AAAAAElFTkSuQmCC" alt="Luarmor API" style="width: 28px; height: 28px; display: block;">
+                    </div>
                     <h3>Luarmor API</h3>
                     <p data-i18n="sdk.luarmor.desc">Luarmor security service integration with advanced encryption.</p>
                     <span class="tag" data-i18n="sdk.luarmor.tag">Secure</span>
                 </div>
+                <!-- Custom HTTP -->
                 <div class="card sdk-card">
                     <div class="icon"><i class="fas fa-code"></i></div>
                     <h3 data-i18n="sdk.custom.title">Custom HTTP</h3>
@@ -599,41 +774,50 @@
             </div>
         </section>
 
-        <!-- ========== 使用方法 ========== -->
+        <!-- ========== Usage ========== -->
         <section class="section container" id="usage">
-            <h2 class="section-title" data-i18n="usage.title">📋 Usage</h2>
+            <h2 class="section-title" data-i18n="usage.title">Usage</h2>
             <p class="section-sub" data-i18n="usage.sub">Integrate in three steps, quick start.</p>
             <div class="step-list">
-                <div class="step-item"><div class="num">1</div><div><strong data-i18n="usage.step1.title">Download Files</strong><br><span data-i18n="usage.step1.desc">Get <code>PatriotUi.luau</code> and <code>Example.lua</code> from GitHub.</span></div></div>
-                <div class="step-item"><div class="num">2</div><div><strong data-i18n="usage.step2.title">Choose SDK</strong><br><span data-i18n="usage.step2.desc">Specify <code>Junkie</code>, <code>Panda</code>, <code>Luarmor</code> or <code>CustomHttp</code> during init.</span></div></div>
-                <div class="step-item"><div class="num">3</div><div><strong data-i18n="usage.step3.title">Initialize & Use</strong><br><span data-i18n="usage.step3.desc">Call <code>PatriotUi:setSdk()</code> with your credentials and start verification.</span></div></div>
+                <div class="step-item"><div class="num">1</div><div><strong data-i18n="usage.step1.title">Load the Library</strong><br><span data-i18n="usage.step1.desc">Use <code>loadstring</code> to fetch PatriotUi.luau from GitHub.</span></div></div>
+                <div class="step-item"><div class="num">2</div><div><strong data-i18n="usage.step2.title">Configure Your SDK</strong><br><span data-i18n="usage.step2.desc">Choose between Luarmor, Panda Auth, Junkie, or Custom HTTP.</span></div></div>
+                <div class="step-item"><div class="num">3</div><div><strong data-i18n="usage.step3.title">Customize & Launch</strong><br><span data-i18n="usage.step3.desc">Set Appearance, Theme, Links, and call <code>Patriot:Launch()</code>.</span></div></div>
             </div>
         </section>
 
-        <!-- ========== 完整示例 ========== -->
+        <!-- ========== Complete Examples ========== -->
         <section class="section container" id="example">
-            <h2 class="section-title" data-i18n="example.title">🧩 Complete Examples</h2>
+            <h2 class="section-title" data-i18n="example.title">Complete Examples</h2>
             <p class="section-sub" data-i18n="example.sub">Click tabs below to view initialization code for each SDK.</p>
 
             <div class="sdk-tabs">
-                <div class="sdk-tab active" data-sdk="junkie">Junkie SDK</div>
-                <div class="sdk-tab" data-sdk="panda">Panda Auth</div>
-                <div class="sdk-tab" data-sdk="luarmor">Luarmor API</div>
-                <div class="sdk-tab" data-sdk="customhttp">Custom HTTP</div>
+                <div class="sdk-tab active" data-sdk="luarmor">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAMAAAAocOYLAAAAXVBMVEVHcEy9rWPMvFvNvlbHuFfPv1jKu2XPwFLKulfLu1XMvVfNvVbUxUbMvFW3plnOvlXVyYq1pFe8q1a6qViyoFe2pFnEtFizol2wnlezoVizolnGtldfSh6zoVq1o12UyztSAAAAH3RSTlMAFiSoWDYKinTIQf//3YzsA///8OfI7kL/oE///3AvsA3vpAAAAUlJREFUeAFioCIAFCpHSXKCAABEG0RUUQUUZWT1/seMYlVmslmT/n0tZEEhVakfXFd13VRt8eTU5qxTPNWWQspnpjJG9abhz8pBcSeMGY0xllxdlQCD835C1YA8cQQ0laI7q0A4N3sfsCzZTYE2WJquG7tOs0anJ+/9oNDZDRpVma7rZde1p0cxO3/GYutSlLUeMWfZS24P4XLdLGZs7OVFYz79tV0uk/9KRlzeFp8eX8p5pu9u3r45xyR8+jJJPzo+xZTof7t5e3QM28unVKnqR49oh/cLCdKPzh4INApS+tsDMAQ910D/3YctHhCPza3rBO3p6dPXfQfmWXBMAaiV+vSZXNgAdbmF5e1BZ7bxNTMHR040Mt1uuTpCjKvFbm4KMu86pcsDOS3DIK9vD1KT67Mf3O1i24B9PXbu1tO3nefqkn9m+V+/AJ8hHv0Fwku3AAAAAElFTkSuQmCC" alt="Luarmor" style="width: 18px; height: 18px;">
+                    Luarmor
+                </div>
+                <div class="sdk-tab" data-sdk="panda">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAllBMVEVHcEz////39/fp6en19fX6+vqJiYlZWVnOzs729vbv7+9oaGgmJiaVlZXq6upfX1+mpqb///8PDw8AAAB8fHzt7e39/f2Ojo40NDTv7+/Pz8+qqqpycnLExMSzs7O/v79GRkZubm5TU1OcnJzY2Nj09PQeHh6Dg4P+/v4bGxs8PDz19fXh4eHt7e3p6emwsLD6+vqsrKzHiNUBAAAAMXRSTlMAVDwLKLr//8SlG////5v/////////rP//19H//6na////////////df//av+Cg+zkubW+HQAAAShJREFUeAFk0UViwzAUAFGZmxi/J8ymMN7/co1Jhcz2iaV+Z5jqM8MwLKVsx/W+3mwPjKGlbeAHQRiFcSIpo/Fkymw017igbinyRlj5wFrjBoKt1O2oy3KK31huqxorYH/A/4XHPZKQ1JjiezGxN+nNcsmlhKAcl7vViZiziN1hBIWM8XFF6iUzEOmPW0BZpTArwqIAdjlbEasxM4fmJCMZQXrinDMVuTR4AU+k3F2lvOYwi33qTaMGb5BIH12VtOe9k/m9JT16U6dd9ioZRYvTzlb77gFNEVlBXD9gro2japJWScPypM23W3Ra1WUn4KHabNHaz+Ns6M/+rVltLJTuqbWzl6U+VNtQiz6UZHGz30LP6zKbyQfwH4b6bHgZOM76aKvv0RwAAP1dJ18vAJOEAAAAAElFTkSuQmCC" alt="Panda" style="width: 18px; height: 18px;">
+                    Panda Auth
+                </div>
+                <div class="sdk-tab" data-sdk="junkie">
+                    <img src="https://jnkie.com/favicon.ico" alt="Junkie" style="width: 18px; height: 18px;">
+                    Junkie
+                </div>
+                <div class="sdk-tab" data-sdk="customhttp">
+                    <i class="fas fa-code" style="font-size: 16px;"></i>
+                    Custom HTTP
+                </div>
             </div>
 
-            <!-- Junkie -->
-            <div class="sdk-content active" id="sdk-junkie">
+            <!-- Luarmor -->
+            <div class="sdk-content active" id="sdk-luarmor">
                 <div class="code-block">
                     <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-                    <pre><code>-- Patriot Key System · Junkie SDK Init
-local PatriotUi = require(script.Parent.PatriotUi)
-
-PatriotUi:setSdk("Junkie", {
-    apiKey = "your_junkie_api_key",
-    secretKey = "your_junkie_secret",
-    timeout = 30
-})</code></pre>
+                    <pre><code>-- Luarmor 卢阿莫
+Patriot:LaunchLuarmor({
+    scriptId = "YOUR_SCRIPT_ID_HERE"  -- Your Luarmor Script id｜你的卢阿莫脚本id
+})
+-- luarmor system invoke｜卢阿莫系统调用</code></pre>
                 </div>
             </div>
 
@@ -641,29 +825,32 @@ PatriotUi:setSdk("Junkie", {
             <div class="sdk-content" id="sdk-panda">
                 <div class="code-block">
                     <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-                    <pre><code>-- Patriot Key System · Panda Auth Init
-local PatriotUi = require(script.Parent.PatriotUi)
-
-PatriotUi:setSdk("Panda", {
-    publicKey = "your_panda_public_key",
-    privateKey = "your_panda_private_key",
-    sandbox = true
-})</code></pre>
+                    <pre><code>-- Panda Auth ｜熊猫 Auth
+Patriot:LaunchWilkins({
+    serviceId = "your-service-id",
+    debug = false,
+    kickOnDetect = false,
+    openDashboard = true,
+    validationTimeout = 600,
+    onTamper = function(flags) warn("Tamper detected:", table.concat(flags, ",")) end,
+    onSessionEnd = function(reason, msg) warn("Session ended:", reason, msg) end,
+})
+-- Panda Auth Key System SDK integration｜熊猫密钥系统sdk集成</code></pre>
                 </div>
             </div>
 
-            <!-- Luarmor -->
-            <div class="sdk-content" id="sdk-luarmor">
+            <!-- Junkie -->
+            <div class="sdk-content" id="sdk-junkie">
                 <div class="code-block">
                     <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-                    <pre><code>-- Patriot Key System · Luarmor API Init
-local PatriotUi = require(script.Parent.PatriotUi)
-
-PatriotUi:setSdk("Luarmor", {
-    apiKey = "your_luarmor_api_key",
-    productId = "your_product_id",
-    encryption = true
-})</code></pre>
+                    <pre><code>-- LaunchJunkie(config)｜Junkie SDK integration with automatic validation
+Patriot:LaunchJunkie({
+    Service = "YOUR_SERVICE_NAME",
+    Identifier = "YOUR_IDENTIFIER",
+    Provider = "YOUR_PROVIDER_NAME"
+})
+-- Keys are automatically validated through Junkie
+-- 密钥通过Junkie自动验证</code></pre>
                 </div>
             </div>
 
@@ -671,33 +858,127 @@ PatriotUi:setSdk("Luarmor", {
             <div class="sdk-content" id="sdk-customhttp">
                 <div class="code-block">
                     <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-                    <pre><code>-- Patriot Key System · Custom HTTP Init
-local PatriotUi = require(script.Parent.PatriotUi)
-
-PatriotUi:setSdk("CustomHttp", {
-    baseUrl = "https://your-api.com/v1",
-    headers = {
-        ["Content-Type"] = "application/json",
-        ["X-API-Key"] = "your_api_key"
-    },
-    auth = {
-        type = "Bearer",
-        token = "your_bearer_token"
-    },
-    endpoints = {
-        verify = "/keys/verify"
-    },
-    timeout = 20
-})</code></pre>
+                    <pre><code>-- HTTP API Validation | Validate keys through your own API endpoint
+local HttpService = game:GetService("HttpService")
+Patriot.Callbacks.OnVerify = function(key)
+    local success, response = pcall(function()
+        return game:HttpGet("https://api.yoursite.com/validate?key=" .. key)
+    end)    
+    if success then
+        local data = HttpService:JSONDecode(response)
+        return {
+            valid = data.valid,
+            error = data.error or "UNKNOWN",
+            message = data.message or "Invalid key"
+        }
+    end  
+    return false
+end
+-- HTTP API验证 | 通过您自己的API端点验证密钥。</code></pre>
                 </div>
             </div>
-            <p style="margin-top: 20px; color: var(--text-secondary);">
-                <span data-i18n="example.footnote">💡 Full project examples available in the GitHub repository's <code>Example.lua</code> file.</span>
-            </p>
+        </section>
+
+        <!-- ========== Full Configuration ========== -->
+        <section class="section container" id="full-config">
+            <h2 class="section-title" data-i18n="config.title">Full Configuration</h2>
+            <p class="section-sub" data-i18n="config.sub">Complete example with all options, callbacks, and theme customization.</p>
+            <div class="code-block">
+                <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                <pre><code>local Patriot = loadstring(game:HttpGet("https://raw.githubusercontent.com/SyndromeXph/Patriot-Key-System-Ui-Library/refs/heads/main/PatriotUi.luau"))()  
+
+-- Appearance｜外观
+Patriot.Appearance = { 
+    Title = "Patriot",
+    Subtitle = "Verify Key to enjoy",
+    Icon = "rbxassetid://95721401302279",
+    IconSize = UDim2.new(0, 30, 0, 30)
+}
+
+-- Links｜链接
+Patriot.Links = {
+    GetKey = "",
+    Discord = "https://discord.gg/xxxxxxx"
+}
+
+-- Storage｜存储
+Patriot.Storage = {
+    FileName = "Patriot_Key",
+    Remember = true,
+    AutoLoad = false
+}
+
+-- Options｜选项
+Patriot.Options = {
+    Keyless = false,  -- Keyless Mode
+    Blur = true,
+    Draggable = true
+}
+
+-- Theme｜主题 (Black & Red)
+Patriot.Theme = {
+    Accent = Color3.fromRGB(220, 20, 60),
+    AccentHover = Color3.fromRGB(255, 30, 80),
+    Background = Color3.fromRGB(0, 0, 0), 
+    Header = Color3.fromRGB(10, 10, 10),
+    Input = Color3.fromRGB(20, 20, 20),
+    Text = Color3.fromRGB(255, 255, 255),
+    TextDim = Color3.fromRGB(150, 150, 150),
+    Success = Color3.fromRGB(50, 255, 50),
+    Error = Color3.fromRGB(255, 30, 80),
+    Warning = Color3.fromRGB(255, 255, 0),
+    StatusIdle = Color3.fromRGB(180, 40, 60),
+    Discord = Color3.fromRGB(220, 20, 60),
+    DiscordHover = Color3.fromRGB(255, 30, 80),
+    Divider = Color3.fromRGB(30, 30, 30),
+    Pending = Color3.fromRGB(40, 40, 40)
+}
+
+-- Callbacks
+Patriot.Callbacks.OnVerify = function(key)
+    return key == "THIS_IS_KEY"  -- Simple validation
+end
+
+Patriot.Callbacks.OnSuccess = function()
+    print("✅ Verification successful, loading script")
+    -- loadstring(game:HttpGet("YOUR_SCRIPT_URL"))()   
+end
+
+Patriot.Callbacks.OnFail = function(errorMsg)
+    print("Failed:", errorMsg)
+end
+
+Patriot.Callbacks.OnClose = function()
+    print("User closed the verification window")
+end
+
+-- Changelog｜更新日志
+Patriot.Changelog = {
+    {Version = "v0.0.4", Date = "May 30, 2026", Changes = {"Add Panda Auth SDK integration","Support Panda Auth Key System"}},
+    {Version = "v0.0.4", Date = "May 30, 2026", Changes = {"Fixed luarmor version script id"}},
+    {Version = "v0.0.3", Date = "May 27, 2026", Changes = {"Add Key System Ui"}},
+    {Version = "v0.0.2", Date = "May 27, 2026", Changes = {"Support luarmor", "Fixed bug"}},
+    {Version = "v0.0.1", Date = "May 27, 2026", Changes = {"Add Something"}},
+    {Version = "v0.0.0", Date = "May 10, 2026", Changes = {"Initial release"}}
+}
+
+-- Shop｜商店
+Patriot.Shop = {
+    Enabled = false,
+    Icon = "",
+    Title = "Get Premium Access",
+    Subtitle = "Instant delivery • 24/7 support",
+    ButtonText = "Buy",
+    Link = ""
+}
+
+-- Launch｜启动
+Patriot:Launch()</code></pre>
+            </div>
         </section>
     </main>
 
-    <!-- ========== 页脚 ========== -->
+    <!-- ========== Footer ========== -->
     <footer class="container footer">
         <div class="brand"><i class="fas fa-key"></i> Patriot Key System</div>
         <div class="footer-links">
@@ -713,11 +994,10 @@ PatriotUi:setSdk("CustomHttp", {
     <!-- ========== JavaScript ========== -->
     <script>
         (function() {
-            // ---- 语言切换 ----
+            // ---- Language Switch ----
             const langButtons = document.querySelectorAll('.lang-switch button');
             const i18nElements = document.querySelectorAll('[data-i18n]');
 
-            // 翻译字典
             const translations = {
                 en: {
                     'nav.features': 'Features',
@@ -726,10 +1006,10 @@ PatriotUi:setSdk("CustomHttp", {
                     'nav.example': 'Example',
                     'nav.repo': 'Repo',
                     'hero.desc': 'A modern key system UI for Roblox executors. Supports Junkie, Panda Auth, Luarmor SDK integration, persistent key storage, and keyless mode.',
-                    'hero.badgeSdk': '3 SDK',
+                    'hero.badgeSdk': '4 SDK',
                     'hero.badgeKeyless': 'Keyless Mode',
                     'hero.cta': 'View Examples',
-                    'features.title': '✨ Core Features',
+                    'features.title': 'Core Features',
                     'features.sub': 'Designed for executor scenarios, balancing flexibility and ease of use.',
                     'features.f1.title': 'Multi-SDK Integration',
                     'features.f1.desc': 'Native support for Junkie, Panda Auth, Luarmor, and custom HTTP backends.',
@@ -743,7 +1023,7 @@ PatriotUi:setSdk("CustomHttp", {
                     'features.f5.desc': 'Define your own key validation logic with full control.',
                     'features.f6.title': 'Auto Update Check',
                     'features.f6.desc': 'Built-in update mechanism to stay compatible with latest SDKs.',
-                    'sdk.title': '🔌 Multi-SDK Support',
+                    'sdk.title': 'Multi-SDK Support',
                     'sdk.sub': 'Patriot Key System abstracts the verification layer, allowing seamless switching between different backend services.',
                     'sdk.junkie.desc': 'Official Junkie service integration for stable key verification.',
                     'sdk.junkie.tag': 'Recommended',
@@ -754,17 +1034,18 @@ PatriotUi:setSdk("CustomHttp", {
                     'sdk.custom.title': 'Custom HTTP',
                     'sdk.custom.desc': 'Generic HTTP configuration to connect to your own backend API.',
                     'sdk.custom.tag': 'Flexible',
-                    'usage.title': '📋 Usage',
+                    'usage.title': 'Usage',
                     'usage.sub': 'Integrate in three steps, quick start.',
-                    'usage.step1.title': 'Download Files',
-                    'usage.step1.desc': 'Get PatriotUi.luau and Example.lua from GitHub.',
-                    'usage.step2.title': 'Choose SDK',
-                    'usage.step2.desc': 'Specify Junkie, Panda, Luarmor or CustomHttp during init.',
-                    'usage.step3.title': 'Initialize & Use',
-                    'usage.step3.desc': 'Call PatriotUi:setSdk() with your credentials and start verification.',
-                    'example.title': '🧩 Complete Examples',
+                    'usage.step1.title': 'Load the Library',
+                    'usage.step1.desc': 'Use loadstring to fetch PatriotUi.luau from GitHub.',
+                    'usage.step2.title': 'Configure Your SDK',
+                    'usage.step2.desc': 'Choose between Luarmor, Panda Auth, Junkie, or Custom HTTP.',
+                    'usage.step3.title': 'Customize & Launch',
+                    'usage.step3.desc': 'Set Appearance, Theme, Links, and call Patriot:Launch().',
+                    'example.title': 'Complete Examples',
                     'example.sub': 'Click tabs below to view initialization code for each SDK.',
-                    'example.footnote': '💡 Full project examples available in the GitHub repository\'s Example.lua file.',
+                    'config.title': 'Full Configuration',
+                    'config.sub': 'Complete example with all options, callbacks, and theme customization.',
                     'footer.repo': 'Repository',
                     'footer.feedback': 'Feedback',
                     'footer.license': 'License'
@@ -776,10 +1057,10 @@ PatriotUi:setSdk("CustomHttp", {
                     'nav.example': '示例',
                     'nav.repo': '仓库',
                     'hero.desc': '为 Roblox 执行器打造的现代密钥系统 UI。支持 Junkie、Panda Auth、Luarmor SDK 集成，持久密钥存储和无密钥模式。',
-                    'hero.badgeSdk': '3 种 SDK',
+                    'hero.badgeSdk': '4 种 SDK',
                     'hero.badgeKeyless': '无密钥模式',
                     'hero.cta': '查看示例',
-                    'features.title': '✨ 核心特性',
+                    'features.title': '核心特性',
                     'features.sub': '专为执行器场景设计，兼顾灵活性与易用性。',
                     'features.f1.title': '多 SDK 集成',
                     'features.f1.desc': '原生支持 Junkie、Panda Auth、Luarmor 及自定义 HTTP 后端。',
@@ -793,7 +1074,7 @@ PatriotUi:setSdk("CustomHttp", {
                     'features.f5.desc': '完全控制，定义你自己的密钥验证逻辑。',
                     'features.f6.title': '自动更新检查',
                     'features.f6.desc': '内置更新机制，保持与最新 SDK 兼容。',
-                    'sdk.title': '🔌 多 SDK 支持',
+                    'sdk.title': '多 SDK 支持',
                     'sdk.sub': 'Patriot Key System 抽象了验证层，让你在不同后端服务间无缝切换。',
                     'sdk.junkie.desc': '官方 Junkie 服务集成，提供稳定的密钥验证。',
                     'sdk.junkie.tag': '推荐',
@@ -804,17 +1085,18 @@ PatriotUi:setSdk("CustomHttp", {
                     'sdk.custom.title': '自定义 HTTP',
                     'sdk.custom.desc': '通用 HTTP 配置，对接你自己的后端 API。',
                     'sdk.custom.tag': '灵活',
-                    'usage.title': '📋 使用方法',
+                    'usage.title': '使用方法',
                     'usage.sub': '三步集成，快速上手。',
-                    'usage.step1.title': '下载文件',
-                    'usage.step1.desc': '从 GitHub 获取 PatriotUi.luau 和 Example.lua。',
-                    'usage.step2.title': '选择 SDK',
-                    'usage.step2.desc': '在初始化时指定 Junkie、Panda、Luarmor 或 CustomHttp。',
-                    'usage.step3.title': '初始化并使用',
-                    'usage.step3.desc': '调用 PatriotUi:setSdk() 并传入凭证，开始验证。',
-                    'example.title': '🧩 完整示例',
+                    'usage.step1.title': '加载库文件',
+                    'usage.step1.desc': '使用 loadstring 从 GitHub 获取 PatriotUi.luau。',
+                    'usage.step2.title': '配置 SDK',
+                    'usage.step2.desc': '在 Luarmor、Panda Auth、Junkie 或 Custom HTTP 中选择。',
+                    'usage.step3.title': '自定义并启动',
+                    'usage.step3.desc': '设置外观、主题、链接，然后调用 Patriot:Launch()。',
+                    'example.title': '完整示例',
                     'example.sub': '点击下方标签，查看每种 SDK 的初始化代码。',
-                    'example.footnote': '💡 完整项目示例请查看 GitHub 仓库的 Example.lua 文件。',
+                    'config.title': '完整配置',
+                    'config.sub': '包含所有选项、回调和主题自定义的完整示例。',
                     'footer.repo': '仓库',
                     'footer.feedback': '反馈',
                     'footer.license': '许可证'
@@ -822,12 +1104,10 @@ PatriotUi:setSdk("CustomHttp", {
             };
 
             function setLanguage(lang) {
-                // 更新按钮状态
                 langButtons.forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.lang === lang);
                 });
 
-                // 更新所有带 data-i18n 属性的元素
                 i18nElements.forEach(el => {
                     const key = el.dataset.i18n;
                     if (translations[lang] && translations[lang][key]) {
@@ -835,15 +1115,17 @@ PatriotUi:setSdk("CustomHttp", {
                     }
                 });
 
-                // 更新 html lang 属性
                 document.documentElement.lang = lang;
 
-                // 更新复制按钮文本
                 document.querySelectorAll('.copy-btn').forEach(btn => {
+                    const icon = btn.querySelector('i');
                     if (lang === 'zh') {
                         btn.innerHTML = '<i class="fas fa-copy"></i> 复制';
                     } else {
                         btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    }
+                    if (btn.classList.contains('copied')) {
+                        btn.innerHTML = '<i class="fas fa-check"></i> ' + (lang === 'zh' ? '已复制' : 'Copied');
                     }
                 });
 
@@ -856,16 +1138,15 @@ PatriotUi:setSdk("CustomHttp", {
                 });
             });
 
-            // 加载保存的语言，默认英文
             const savedLang = localStorage.getItem('patriot-lang') || 'en';
             setLanguage(savedLang);
 
-            // ---- SDK 标签切换 ----
+            // ---- SDK Tabs ----
             const tabs = document.querySelectorAll('.sdk-tab');
             const contents = {
-                junkie: document.getElementById('sdk-junkie'),
-                panda: document.getElementById('sdk-panda'),
                 luarmor: document.getElementById('sdk-luarmor'),
+                panda: document.getElementById('sdk-panda'),
+                junkie: document.getElementById('sdk-junkie'),
                 customhttp: document.getElementById('sdk-customhttp')
             };
 
@@ -880,7 +1161,7 @@ PatriotUi:setSdk("CustomHttp", {
                 });
             });
 
-            // ---- 复制代码 ----
+            // ---- Copy Code ----
             document.querySelectorAll('.code-block').forEach(block => {
                 const btn = block.querySelector('.copy-btn');
                 const code = block.querySelector('pre code');
@@ -912,6 +1193,17 @@ PatriotUi:setSdk("CustomHttp", {
                             this.innerHTML = '<i class="fas fa-copy"></i> ' + (l === 'zh' ? '复制' : 'Copy');
                         }, 2000);
                     }
+                });
+            });
+
+            // ---- Mouse Parallax for Cards ----
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    this.style.setProperty('--mouse-x', x + '%');
+                    this.style.setProperty('--mouse-y', y + '%');
                 });
             });
         })();
