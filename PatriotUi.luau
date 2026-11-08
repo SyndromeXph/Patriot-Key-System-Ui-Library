@@ -67,6 +67,9 @@ Patriot.Options = {
     Draggable = true
 }
 
+-- supported map PlaceIds: 支持的地图 PlaceId 列表，如 { 123456, 789012 }
+Patriot.SupportedGames = {}
+
 -- theme
 Patriot.Theme = {
     Accent = Color3.fromRGB(139, 0, 0),
@@ -1067,6 +1070,7 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     local valueSize = isCompact and 10 or 11
     local welcomeSize = isCompact and 11 or 12
     local spacing = isCompact and 3 or 5
+    local copyBtnSize = 18
 
     local panel = Instance.new("Frame")
     panel.Name = "UserInfoPanel"
@@ -1276,19 +1280,68 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     deviceValue.TextTruncate = Enum.TextTruncate.AtEnd
     deviceValue.Parent = deviceContainer
 
+    local mapContainer = Instance.new("Frame")
+    mapContainer.Size = UDim2.new(1, 0, 0, fieldHeight)
+    mapContainer.BackgroundTransparency = 1
+    mapContainer.LayoutOrder = 6
+    mapContainer.Parent = contentFrame
+
+    local supportedMap = table.find(Patriot.SupportedGames, game.PlaceId) ~= nil
+    local mapIdText = tostring(game.PlaceId)
+
+    local mapTitle = Instance.new("TextLabel")
+    mapTitle.Size = UDim2.new(1, 0, 0, 11)
+    mapTitle.BackgroundTransparency = 1
+    mapTitle.Text = supportedMap and "Map ID · Supported" or "Map ID · Not Supported"
+    mapTitle.TextColor3 = Patriot.Theme.TextDim
+    mapTitle.TextSize = titleSize
+    mapTitle.Font = Enum.Font.ArimoBold
+    mapTitle.TextXAlignment = Enum.TextXAlignment.Left
+    mapTitle.Parent = mapContainer
+
+    local mapValue = Instance.new("TextLabel")
+    mapValue.Size = UDim2.new(1, -(copyBtnSize + 6), 0, 14)
+    mapValue.Position = UDim2.new(0, 0, 0, 11)
+    mapValue.BackgroundTransparency = 1
+    mapValue.Text = mapIdText
+    mapValue.TextColor3 = supportedMap and Patriot.Theme.Success or Patriot.Theme.Error
+    mapValue.TextSize = valueSize
+    mapValue.Font = Enum.Font.ArimoBold
+    mapValue.TextXAlignment = Enum.TextXAlignment.Left
+    mapValue.TextTruncate = Enum.TextTruncate.AtEnd
+    mapValue.Parent = mapContainer
+
+    local mapCopyBtn = Instance.new("ImageButton")
+    mapCopyBtn.Size = UDim2.new(0, copyBtnSize, 0, copyBtnSize)
+    mapCopyBtn.Position = UDim2.new(1, 0, 0.5, 1)
+    mapCopyBtn.AnchorPoint = Vector2.new(1, 0.5)
+    mapCopyBtn.BackgroundTransparency = 1
+    mapCopyBtn.Image = getIcon("copy")
+    mapCopyBtn.ImageColor3 = Patriot.Theme.TextDim
+    mapCopyBtn.ScaleType = Enum.ScaleType.Fit
+    mapCopyBtn.Parent = mapContainer
+    mapCopyBtn.MouseEnter:Connect(function() TweenService:Create(mapCopyBtn, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.Accent}):Play() end)
+    mapCopyBtn.MouseLeave:Connect(function() TweenService:Create(mapCopyBtn, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.TextDim}):Play() end)
+    mapCopyBtn.MouseButton1Click:Connect(function()
+        pcall(function() setclipboard(mapIdText) end)
+        TweenService:Create(mapCopyBtn, TweenInfo.new(0.1), {ImageColor3 = Patriot.Theme.Success}):Play()
+        task.delay(0.3, function() TweenService:Create(mapCopyBtn, TweenInfo.new(0.15), {ImageColor3 = Patriot.Theme.TextDim}):Play() end)
+        Patriot:Notify("Copied", "Map ID copied to clipboard", 2, "copy")
+    end)
+
     local divider2 = Instance.new("Frame")
     divider2.Size = UDim2.new(1, 16, 0, 2)
     divider2.Position = UDim2.new(0.5, 0, 0, 0)
     divider2.AnchorPoint = Vector2.new(0.5, 0)
     divider2.BackgroundColor3 = Patriot.Theme.Divider
     divider2.BorderSizePixel = 0
-    divider2.LayoutOrder = 6
+    divider2.LayoutOrder = 7
     divider2.Parent = contentFrame
 
     local hwidContainer = Instance.new("Frame")
     hwidContainer.Size = UDim2.new(1, 0, 0, fieldHeight)
     hwidContainer.BackgroundTransparency = 1
-    hwidContainer.LayoutOrder = 7
+    hwidContainer.LayoutOrder = 8
     hwidContainer.Parent = contentFrame
 
     local hwidTitle = Instance.new("TextLabel")
@@ -1302,7 +1355,6 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     hwidTitle.Parent = hwidContainer
 
     local fullHWID = getHWID()
-    local copyBtnSize = 18
     local dotAreaWidth = panelWidth - 16 - copyBtnSize - 6
     local hiddenDots = generateHiddenDots(dotAreaWidth, 5)
 
@@ -1342,13 +1394,13 @@ local function CreateUserInfoPanel(parent, windowWidth, panelHeight, panelWidth,
     divider3.AnchorPoint = Vector2.new(0.5, 0)
     divider3.BackgroundColor3 = Patriot.Theme.Divider
     divider3.BorderSizePixel = 0
-    divider3.LayoutOrder = 8
+    divider3.LayoutOrder = 9
     divider3.Parent = contentFrame
 
     local clockContainer = Instance.new("Frame")
     clockContainer.Size = UDim2.new(1, 0, 0, isCompact and 30 or 38)
     clockContainer.BackgroundTransparency = 1
-    clockContainer.LayoutOrder = 9
+    clockContainer.LayoutOrder = 10
     clockContainer.Parent = contentFrame
 
     local clockRow = Instance.new("Frame")
@@ -1514,7 +1566,7 @@ local function BuildKeylessUI()
     local mobile = isMobile()
     local padding = 14
     local windowWidth = 300
-    local windowHeight = 265
+    local windowHeight = 285
     local userPanelWidth = 165
     local changelogPanelWidth = 200
     local gap = 12
